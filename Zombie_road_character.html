@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171a1c">
+<title>Zombie Road – Karakterlap</title>
+<style>
+:root{color-scheme:dark;--bg:#141719;--panel:#202528;--panel2:#282f32;--line:#3b4549;--text:#edf0ec;--muted:#aab4b3;--accent:#d9a441;--accent2:#f0c96c;--red:#cf665c;--green:#7db58a;--blue:#83b9c8;--radius:14px}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#242b2d 0,#141719 58%);color:var(--text);font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:#30383b;color:var(--text);border-radius:10px;padding:.65rem .85rem;min-height:42px;transition:background .15s,border-color .15s}
+button:hover{border-color:var(--accent);background:#3a4244}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#211b10;font-weight:750}
+button.danger{border-color:#75423e;color:#ffb0a8}
+button.small{min-height:36px;padding:.35rem .65rem}
+button:disabled{opacity:.35;cursor:not-allowed}
+input,textarea{width:100%;background:#15191b;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:.7rem .75rem}
+textarea{resize:vertical;min-height:92px}
+input[type=file]{display:none}
+.portrait-panel{display:grid;grid-template-columns:minmax(130px,210px) minmax(0,1fr);gap:18px;align-items:center}
+.portrait-frame{position:relative;display:grid;place-items:center;overflow:hidden;min-height:180px;aspect-ratio:4/5;background:linear-gradient(145deg,#171b1c,#292521);border:1px solid #78604b;box-shadow:inset 0 0 0 4px #16191a,0 8px 22px #0007;clip-path:polygon(2% 5%,12% 2%,19% 4%,29% 1%,38% 4%,51% 1%,61% 4%,73% 2%,83% 5%,98% 2%,96% 17%,99% 29%,96% 41%,99% 55%,96% 67%,98% 80%,94% 97%,80% 95%,68% 99%,55% 96%,43% 99%,30% 96%,18% 98%,3% 94%,5% 81%,1% 69%,4% 56%,1% 43%,4% 30%,2% 17%)}
+.portrait-frame img{display:block;width:100%;height:100%;min-height:180px;max-height:330px;object-fit:cover}
+.portrait-placeholder{padding:18px;text-align:center;color:#8d8980;font-size:.84rem;text-transform:uppercase;letter-spacing:.12em}
+.portrait-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.portrait-info{color:var(--muted);font-size:.82rem;margin-top:9px}
+@media(max-width:520px){.portrait-panel{grid-template-columns:1fr}.portrait-frame{width:min(100%,240px);margin:0 auto}.portrait-tools button{flex:1}}
+.app{max-width:1180px;margin:0 auto;padding:18px 16px 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(145deg,#e4b64e,#a45a30);display:grid;place-items:center;color:#211b10;font-size:25px;font-weight:900;box-shadow:0 5px 22px #0005}
+h1{font-size:clamp(1.4rem,3vw,2rem);line-height:1.1;margin:0;letter-spacing:.02em}
+.subtitle{color:var(--muted);font-size:.9rem;margin-top:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+h2{font-size:1.1rem;margin:0 0 14px;letter-spacing:.02em}
+h3{font-size:.98rem;margin:0 0 10px}
+.section{background:linear-gradient(160deg,#22282a,#1b2022);border:1px solid var(--line);border-radius:var(--radius);padding:17px;margin-top:14px;box-shadow:0 8px 24px #0002}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.section-head h2{margin:0}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.span-12{grid-column:span 12}.span-6{grid-column:span 6}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+.field label,.label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.field input{min-width:0}
+.stepper{display:flex;align-items:stretch;gap:7px}
+.stepper button{width:46px;flex:0 0 46px;font-size:1.35rem;font-weight:700;padding:0}
+.stepper input{min-width:0;text-align:center;font-weight:750;font-size:1.12rem;font-variant-numeric:tabular-nums;padding:.55rem .25rem}
+.stat-card{background:#171c1e;border:1px solid #374144;border-radius:12px;padding:12px;min-width:0}
+.stat-title{color:var(--muted);font-size:.8rem;margin-bottom:8px}
+.stat-value{font-size:1.65rem;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+.stat-foot{font-size:.75rem;color:var(--muted);margin-top:7px}
+.meter{height:7px;background:#394144;border-radius:99px;overflow:hidden;margin-top:9px}
+.meter>span{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.meter.red>span{background:var(--red)}.meter.green>span{background:var(--green)}.meter.blue>span{background:var(--blue)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:.76rem;font-weight:700;background:#30383b;color:var(--muted)}
+.pill.warn{color:#ffca9f;background:#50372a}.pill.good{color:#b8e4c1;background:#263f30}
+.bonus-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.bonus{background:#171c1e;border:1px solid #374144;border-radius:10px;padding:11px}
+.bonus .stepper button{width:38px;flex-basis:38px;min-height:39px}
+.bonus .stepper input{font-size:1rem}
+.subhead{font-size:.85rem;color:var(--muted);margin:15px 0 8px}
+.action-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.action-card{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:12px;width:100%;background:#171c1e}
+.action-card .cost{flex:0 0 auto;background:#493b22;color:#f5d68b;border-radius:8px;padding:4px 7px;font-size:.78rem;font-weight:800}
+.action-card strong{display:block;margin-bottom:3px}
+.action-card small{display:block;color:var(--muted);line-height:1.4}
+.action-card.spent{opacity:.42}
+.slot-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.slot{border:1px solid var(--line);background:#171c1e;border-radius:10px;padding:10px}
+.slot .slot-label{font-size:.76rem;color:var(--muted);margin-bottom:7px}
+.slot input{margin-bottom:7px}
+.slot textarea{min-height:150px;font-size:.9rem}
+.goal-list{display:grid;gap:9px}
+.goal{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;background:#171c1e;border:1px solid #374144;border-radius:11px;padding:12px}
+.goal-name{font-weight:700;overflow-wrap:anywhere}
+.goal-meta{color:var(--muted);font-size:.8rem;margin-top:3px}
+.goal-controls{display:flex;align-items:center;gap:6px}
+.goal-count{min-width:65px;text-align:center;font-variant-numeric:tabular-nums;font-weight:800}
+.goal-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.completed{border-color:#385744;background:#18231c}
+.completed .goal-name{color:#c1e7c8}
+.story-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.story-field label{display:block;color:var(--muted);font-size:.85rem;margin-bottom:6px}
+.echo{border-color:#75613a;background:linear-gradient(145deg,#2d281e,#1e2222)}
+.echo textarea{min-height:110px}
+.empty{color:var(--muted);font-size:.9rem;padding:10px 0}
+.note{color:var(--muted);font-size:.8rem}
+.footer{color:#7f8b8b;font-size:.76rem;text-align:center;margin-top:18px}
+dialog{border:1px solid #566164;border-radius:16px;background:#202628;color:var(--text);padding:0;width:min(480px,calc(100% - 28px));box-shadow:0 25px 80px #0009}
+dialog::backdrop{background:#080a0bd9;backdrop-filter:blur(4px)}
+.modal-inner{padding:20px}
+.modal-inner h2{margin-bottom:16px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.form-row{margin-bottom:13px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#e7c36f;color:#201a0f;font-weight:700;padding:10px 15px;border-radius:10px;box-shadow:0 8px 30px #0007;z-index:10;max-width:calc(100% - 28px);text-align:center}
+.hidden{display:none!important}
+
+
+/* Ötpercenkénti mentési emlékeztető */
+.save-reminder {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 20;
+  width: min(390px, calc(100% - 28px));
+  padding: 18px;
+  border: 1px solid #d6a83f;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #302a1d, #202426);
+  box-shadow: 0 12px 40px #000b;
+}
+
+.save-reminder h3 {
+  color: #ffe59a;
+  font-size: 1.05rem;
+  margin: 0 0 7px;
+}
+
+.save-reminder p {
+  color: #d4d0c4;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.save-reminder-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.save-reminder-actions button {
+  flex: 1;
+}
+
+@media (max-width: 420px) {
+  .save-reminder {
+    right: 10px;
+    bottom: 10px;
+  }
+}
+
+
+/* 3D kockadobás */
+.dice-panel{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr);align-items:center;gap:22px;min-height:230px;padding:22px;border:1px solid #655334;border-radius:13px;background:radial-gradient(ellipse at 30% 35%,#3b3425 0,#242522 45%,#171b1c 100%)}
+.dice-panel:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background:repeating-linear-gradient(135deg,transparent 0 17px,#d9a441 18px,transparent 19px 36px);mask-image:linear-gradient(90deg,#000,transparent 80%)}
+
+/* A perspective a színpadon van; a színpad szülői közül egyik sem lapítja a 3D-t */
+.dice-stage{position:relative;display:grid;place-items:center;min-height:180px;perspective:850px}
+.dice-stage:after{content:"";position:absolute;z-index:-1;bottom:13px;width:125px;height:28px;border-radius:50%;background:#0009;filter:blur(10px);transition:transform .3s,opacity .3s}
+
+/* FIGYELEM: a kockán és a szülőin NE legyen filter, opacity<1, overflow, clip-path, mix-blend-mode */
+.dice-cube{--die-size:86px;position:relative;width:var(--die-size);height:var(--die-size);transform-style:preserve-3d;transform:rotateX(-12deg) rotateY(-24deg);transition:transform 1.3s cubic-bezier(.12,.78,.2,1);will-change:transform}
+
+
+.dice-face {
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 5px;
+  padding: 12px;
+  border: 2px solid #626b55;
+  border-radius: 9px;
+  background:
+    linear-gradient(145deg, #929482 0%, #656b5a 42%, #343a31 100%);
+  box-shadow:
+    inset 0 0 0 2px #292e27,
+    inset 3px 3px 8px #d0d0b044,
+    inset -5px -5px 12px #11160fbb,
+    0 0 5px #0008;
+  color: #1c2119;
+  backface-visibility: hidden;
+  transition: box-shadow .3s;
+}
+.dice-face.face-1{transform:rotateY(0deg) translateZ(calc(var(--die-size) / 2))}
+.dice-face.face-6{transform:rotateY(180deg) translateZ(calc(var(--die-size) / 2))}
+.dice-face.face-3{transform:rotateY(90deg) translateZ(calc(var(--die-size) / 2))}
+.dice-face.face-4{transform:rotateY(-90deg) translateZ(calc(var(--die-size) / 2))}
+.dice-face.face-2{transform:rotateX(90deg) translateZ(calc(var(--die-size) / 2))}
+.dice-face.face-5{transform:rotateX(-90deg) translateZ(calc(var(--die-size) / 2))}
+
+.die-pip {
+  align-self: center;
+  justify-self: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 28%,
+    #34372b 0%,
+    #11140f 75%
+  );
+  box-shadow:
+    inset 1px 1px 3px #000c,
+    0 1px 1px #b7b9a455;
+  opacity: 0;
+}
+
+.die-pip.on {
+  opacity: 1;
+}
+.die-pip.on{opacity:1}
+
+/* Rolling állapot: az árnyék összehúzódik, a lapok izzanak (filter helyett box-shadow) */
+.dice-stage.rolling:after{transform:scale(.72);opacity:.65}
+.dice-stage.rolling .dice-face{box-shadow:inset 0 0 0 2px #8b642e,inset 3px 3px 9px #fff8,inset -4px -5px 10px #68491c,0 0 16px #d9a441aa}
+
+.dice-copy{position:relative;z-index:1}
+.dice-kicker{font-size:.72rem;font-weight:800;letter-spacing:.2em;color:#e5bd65;text-transform:uppercase;margin-bottom:5px}
+.dice-copy h3{font-size:1.25rem;margin:0 0 7px}
+.dice-copy p{color:var(--muted);margin:0 0 16px;font-size:.9rem;max-width:38ch}
+.dice-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dice-roll{min-width:150px;min-height:48px;letter-spacing:.04em;box-shadow:0 5px 18px #0005}
+.dice-roll:active{transform:translateY(1px)}
+.dice-result{display:flex;align-items:baseline;gap:8px;min-width:86px}
+.dice-result strong{font-size:2.15rem;line-height:1;font-variant-numeric:tabular-nums;color:#f4d17d;text-shadow:0 0 18px #d9a44144}
+.dice-result span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.dice-result.waiting strong{color:#aab4b3;text-shadow:none}
+.last-luck-result {
+  margin-top: 12px;
+  padding: 8px 11px;
+  border: 1px solid #655334;
+  border-radius: 8px;
+  background: #171c1e;
+  color: #e5bd65;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.last-luck-result strong {
+  color: #ffe59a;
+  font-size: .95rem;
+}
+
+@media(max-width:600px){.dice-panel{grid-template-columns:1fr;gap:4px;padding:16px}.dice-stage{min-height:155px}.dice-copy{text-align:center}.dice-copy p{margin-left:auto;margin-right:auto}.dice-actions{justify-content:center}.dice-result{justify-content:center}}
+@media(prefers-reduced-motion:reduce){.dice-cube{transition:none}.dice-stage:after{transition:none}}
+
+
+/* SZERENCSEJELZÉS */
+.luck-banner {
+  margin-top: 16px;
+  padding: 20px 12px;
+  text-align: center;
+  border: 2px solid #f4d17d;
+  border-radius: 14px;
+  background: radial-gradient(ellipse at center, #72501b 0%, #302516 65%, #191b1a 100%);
+  box-shadow: 0 0 30px #e5b74355, inset 0 0 20px #f4d17d22;
+  animation: luckAppear .45s ease-out both;
+}
+
+.luck-banner strong {
+  display: block;
+  color: #ffe59a;
+  font-size: clamp(2rem, 7vw, 3.6rem);
+  font-weight: 1000;
+  letter-spacing: .14em;
+  text-shadow: 0 0 10px #ffdc70, 0 0 30px #e5a92399;
+}
+
+.luck-banner span {
+  display: block;
+  margin-top: 5px;
+  color: #fff0bd;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+}
+
+.bonus-dice-panel {
+  margin-top: 12px;
+  border-color: #d6a83f;
+  background:
+    radial-gradient(ellipse at 30% 30%, #655020 0%, #302619 48%, #17191a 100%);
+  box-shadow: inset 0 0 30px #f5cc6422, 0 8px 30px #0005;
+  animation: luckAppear .5s ease-out both;
+}
+
+.bonus-dice-panel:before {
+  opacity: .4;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0 10px,
+    #f4d17d 11px,
+    transparent 12px 22px
+  );
+}
+
+.bonus-dice-panel .dice-face {
+  border: 3px solid #fff0b0;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, #fff8d9 0%, #f3d16d 25%, #b8862e 65%, #704517 100%);
+  box-shadow:
+    inset 0 0 0 3px #8d6121,
+    inset 0 0 0 5px #fbe7a0,
+    inset 4px 4px 12px #fff9,
+    inset -5px -5px 12px #59350b,
+    0 0 12px #e8bc5066;
+}
+
+.bonus-dice-panel .die-pip {
+  background: radial-gradient(circle at 30% 25%, #79501b 0%, #211609 75%);
+  box-shadow: inset 1px 1px 3px #000a, 0 0 3px #fff9;
+}
+
+.bonus-dice-panel .dice-kicker {
+  color: #ffe59a;
+}
+
+.bonus-dice-panel .dice-result strong {
+  color: #ffe59a;
+  text-shadow: 0 0 20px #e9b83e88;
+}
+
+.bonus-dice-panel .dice-stage.rolling .dice-face {
+  box-shadow:
+    inset 0 0 0 3px #8d6121,
+    inset 0 0 0 5px #fbe7a0,
+    inset 4px 4px 12px #fff9,
+    inset -5px -5px 12px #59350b,
+    0 0 24px #ffdf70;
+}
+
+@keyframes luckAppear {
+  from { opacity: 0; transform: translateY(10px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.luck-outcome {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 800;
+  background: #171c1e;
+  border: 1px solid #655334;
+}
+
+.luck-outcome.success {
+  color: #ffe59a;
+  border-color: #d6a83f;
+  background: linear-gradient(135deg, #49391b, #252319);
+}
+
+.luck-outcome.failure {
+  color: #c5cecc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .luck-banner, .bonus-dice-panel {
+    animation: none;
+  }
+}
+
+
+@media(max-width:760px){.app{padding:12px 10px 36px}.section{padding:13px}.span-6,.span-4,.span-3{grid-column:span 6}.bonus-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.slot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.action-list{grid-template-columns:1fr}.story-grid{grid-template-columns:1fr}header{align-items:flex-start}.actions{width:100%}.actions button{flex:1}.stat-value{font-size:1.45rem}}
+@media(max-width:420px){.span-6,.span-4,.span-3{grid-column:span 12}.goal{grid-template-columns:1fr}.goal-controls{justify-content:flex-start}.brand{align-items:flex-start}.logo{width:42px;height:42px}.stepper button{width:43px;flex-basis:43px}}
+
+/* =========================================================
+   ZOMBIE ROAD — szakadt, vérfoltos túlélői karakterlap
+   Kizárólag vizuális CSS-réteg; a HTML és a JavaScript változatlan.
+   ========================================================= */
+:root{
+  color-scheme:dark;
+  --bg:#0d1010;
+  --panel:#292723;
+  --panel2:#34302a;
+  --line:#65584a;
+  --text:#e8dfca;
+  --muted:#aaa18e;
+  --accent:#c59a54;
+  --accent2:#efd18d;
+  --red:#a9342e;
+  --green:#7d9870;
+  --blue:#809ca0;
+  --radius:3px;
+}
+html{background:#0d1010}
+body{
+  background:
+    radial-gradient(ellipse at 12% 8%,#422a25 0,transparent 31%),
+    radial-gradient(ellipse at 91% 23%,#26302b 0,transparent 34%),
+    radial-gradient(ellipse at 50% 100%,#2b211d 0,transparent 44%),
+    repeating-linear-gradient(7deg,#111414 0 3px,#131515 4px 7px,#0e1111 8px 12px);
+  color:var(--text);
+  font-family:Georgia,"Times New Roman",serif;
+}
+.app{max-width:1220px}
+header{padding:8px 4px 14px;border-bottom:1px solid #493a31;position:relative}
+header:after{
+  content:"";position:absolute;left:0;right:0;bottom:-3px;height:5px;pointer-events:none;
+  background:repeating-linear-gradient(105deg,transparent 0 12px,#7b2b24 13px 15px,transparent 16px 28px);opacity:.7
+}
+.logo{
+  border-radius:2px;color:#f0d7aa;background:linear-gradient(145deg,#6f3028,#261c19 58%,#151615);
+  border:1px solid #8e4738;box-shadow:inset 0 0 0 3px #171615,0 0 22px #8d241e55;
+  transform:rotate(-3deg);font-family:Georgia,serif;text-shadow:0 2px #000
+}
+h1{font-family:Impact,"Arial Narrow",sans-serif;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#e5d6b8;text-shadow:2px 2px 0 #5a211d,4px 5px 0 #080909,0 0 18px #9d302544}
+.subtitle{color:#a89a83;font-family:Georgia,serif;font-style:italic}
+h2,h3{font-family:Impact,"Arial Narrow",sans-serif;letter-spacing:.055em;text-transform:uppercase;color:#ded0b3;text-shadow:1px 2px #1b100e}
+.section{
+  position:relative;isolation:isolate;
+  background:transparent;border:0;border-radius:0;
+  padding:22px 21px;margin-top:18px;box-shadow:none;
+}
+/* A sötét, rojtos külső papírszél */
+.section:before{
+  content:"";position:absolute;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 4% 18%,#a12c2555 0 2%,transparent 13%),
+    radial-gradient(ellipse at 96% 76%,#7e201d66 0 2%,transparent 15%),
+    linear-gradient(135deg,#514338,#201d1a 48%,#42342b);
+  clip-path:polygon(1.5% 0,8% 1.2%,14% 0,22% 1%,31% 0,40% 1.3%,51% 0,60% 1%,71% 0,80% 1.4%,91% 0,98% 1%,100% 7%,98.9% 14%,100% 22%,98.8% 30%,100% 40%,98.7% 49%,100% 59%,98.9% 68%,100% 78%,98.4% 87%,100% 96%,93% 100%,83% 98.8%,73% 100%,62% 98.7%,52% 100%,42% 98.8%,32% 100%,22% 98.7%,12% 100%,2% 98.5%,0 91%,1.2% 82%,0 72%,1.1% 61%,0 50%,1.2% 39%,0 29%,1.2% 18%,0 8%);
+  filter:drop-shadow(0 9px 10px #000b);
+}
+/* A papír belső felülete: kevert régi pergamen és hideg, nedves foltok */
+.section:after{
+  content:"";position:absolute;inset:4px;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 7% 17%,#5e77704d 0,transparent 22%),
+    radial-gradient(ellipse at 86% 78%,#4d69604a 0,transparent 26%),
+    radial-gradient(ellipse at 54% 4%,#a8794933 0,transparent 34%),
+    radial-gradient(ellipse at 30% 100%,#9a4a3530 0,transparent 30%),
+    repeating-linear-gradient(2deg,#b3a1840a 0 1px,transparent 1px 5px),
+    linear-gradient(125deg,#655947 0%,#9b8869 16%,#777263 34%,#a18c6b 51%,#6c7066 73%,#88735b 100%);
+  clip-path:polygon(1.5% 0,9% 1%,17% 0,28% 1.1%,39% 0,50% 1%,61% 0,73% 1.2%,86% 0,98% 1%,100% 12%,98.8% 24%,100% 37%,98.8% 49%,100% 63%,98.7% 76%,100% 89%,97% 100%,84% 98.8%,72% 100%,60% 98.8%,48% 100%,36% 98.8%,24% 100%,11% 98.8%,1% 100%,0 87%,1.2% 74%,0 60%,1.1% 47%,0 33%,1.2% 20%,0 8%);
+  box-shadow:inset 0 0 24px #20191488;
+}
+.section-head{border-bottom:1px solid #44372c;padding-bottom:9px}
+.section-head h2{color:#f0dfbd}
+.field label,.label,.story-field label,.stat-title,.slot .slot-label,.subhead{color:#443c30}
+.field label,.story-field label,.stat-title,.slot .slot-label{font-weight:700;text-shadow:0 1px #d4c3a4}
+.note,.stat-foot,.goal-meta,.action-card small,.dice-copy p{color:#d0c2a7}
+.pill{border-radius:2px;background:#2b2923;color:#d9c8a5;border:1px solid #6d5a43;box-shadow:inset 0 0 8px #0005}
+.pill.warn{background:#552a25;color:#ffd0ad;border-color:#8e4738}.pill.good{background:#26372b;color:#c7dfbb;border-color:#4c694e}
+button{
+  border-radius:2px;border-color:#665441;
+  background:linear-gradient(180deg,#40372c,#25221e);
+  color:#eadfc8;box-shadow:inset 0 1px #c7ad7c22,0 2px 3px #0006;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:650
+}
+button:hover{border-color:#b84a3d;background:linear-gradient(180deg,#594037,#30221f)}
+button.primary{background:linear-gradient(135deg,#b53c31,#71251f);border-color:#d06a53;color:#fff0d7;text-shadow:0 1px #43110d;box-shadow:inset 0 1px #ffb69b44,0 0 12px #9c2b2555}
+button.danger{border-color:#a3473c;color:#ffb6a5}
+input,textarea{
+  border-radius:2px;border:1px solid #625441;
+  background:linear-gradient(135deg,#242723,#343129);color:#f0e3c9;
+  box-shadow:inset 0 2px 8px #0007;
+  
+}
+input::placeholder,textarea::placeholder{color:#a39984}
+input:focus,textarea:focus{border-color:#bd5443;background:#292521}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline-color:#e8b46c}
+.stat-card,.bonus,.slot,.goal,.action-card,.last-luck-result,.luck-outcome{
+  border-radius:2px;border:1px solid #77654c;
+  background:
+    radial-gradient(ellipse at 12% 0%,#a98b5a1a,transparent 60%),
+    repeating-linear-gradient(1deg,#c8b58b05 0 1px,transparent 1px 5px),
+    linear-gradient(135deg,#75664d,#514b3e 58%,#625443);
+  color:#eee0c3;box-shadow:inset 0 0 0 2px #251f1a55,inset 0 0 16px #17151244,0 3px 7px #0004;
+}
+.stat-title{color:#e0cfad;text-shadow:0 1px #211b16}
+.stat-value{color:#fff0d1;text-shadow:1px 2px #292019}
+.stat-foot{color:#c9b99a}
+.meter{border-radius:0;background:#292721;border:1px solid #4c4335}
+.meter>span{background:linear-gradient(90deg,#b5a06b,#dfc17a)}
+.meter.red>span{background:linear-gradient(90deg,#76251f,#d44a3e)}
+.meter.green>span{background:linear-gradient(90deg,#3f6042,#92b27c)}
+.meter.blue>span{background:linear-gradient(90deg,#3c6269,#94b5b8)}
+.bonus .stepper button{background:#332b23}
+.action-card{background:linear-gradient(120deg,#6b5b45,#3c3930);color:#f0e2c7}
+.action-card .cost{border-radius:2px;background:#622923;color:#ffd6a5;border:1px solid #9c4738}
+.action-card.spent{opacity:.42}
+.goal{background:linear-gradient(120deg,#76664d,#46453b)}
+.completed{border-color:#71906b;background:linear-gradient(120deg,#455a42,#303c31)}
+.completed .goal-name{color:#d7e9c5}
+.echo{border-color:#8f4c3e;background:linear-gradient(145deg,#6c4b37,#343a34)}
+.echo textarea{background:#282620}
+.save-timer{border-radius:2px;background:linear-gradient(90deg,#332c24,#242723,#332c24);border-color:#65513c;color:#d8c7a7;box-shadow:0 4px 15px #0006}
+.save-timer strong{color:#efc782}
+.save-reminder{border-radius:2px;border-color:#b65a43;background:linear-gradient(135deg,#493126,#242521);box-shadow:0 12px 40px #000c,inset 0 0 18px #9c2c2222}
+.save-reminder h3{color:#f0c987}.save-reminder p{color:#e0d1b5}
+.toast{border-radius:2px;background:#c2a36b;color:#211a13;border:1px solid #e1c68c}
+.footer{color:#9a8a70}
+dialog{border-radius:3px;border-color:#8b6347;background:linear-gradient(135deg,#4d4436,#252622);box-shadow:0 25px 80px #000c}
+dialog::backdrop{background:#070808e8}
+.dice-panel{
+  border-radius:2px;border-color:#81503a;
+  background:radial-gradient(ellipse at 30% 35%,#49362b 0,#292923 45%,#171a18 100%);
+  box-shadow:inset 0 0 0 3px #191816,0 8px 22px #0007
+}
+.dice-panel:before{background:repeating-linear-gradient(135deg,transparent 0 17px,#8b3028 18px,transparent 19px 36px);opacity:.22}
+.dice-kicker{color:#d79b72}
+.dice-result strong{color:#e7c68c;text-shadow:0 0 18px #9c342b66}
+.last-luck-result{color:#e8bd7f}
+.luck-banner{border-radius:2px;border-color:#bb4c3b;background:radial-gradient(ellipse at center,#5d2a22 0%,#32231e 65%,#191b19 100%);box-shadow:0 0 25px #9d2b2550,inset 0 0 20px #9c342b33}
+.luck-banner strong{color:#f2c5a0;text-shadow:0 0 10px #b43b2c,0 0 30px #8e201e99}
+.luck-banner span{color:#f0d7bc}
+.bonus-dice-panel{border-color:#9e4939;background:radial-gradient(ellipse at 30% 30%,#5b3226 0%,#302720 48%,#17191a 100%);box-shadow:inset 0 0 30px #a7352522,0 8px 30px #0007}
+.bonus-dice-panel:before{background:repeating-linear-gradient(45deg,transparent 0 10px,#b24a35 11px,transparent 12px 22px)}
+.bonus-dice-panel .dice-face{border-color:#c6a06e;background:linear-gradient(135deg,#d9c39a 0%,#a98b5d 35%,#725238 72%,#3b2a1d 100%);box-shadow:inset 0 0 0 3px #61472f,inset 0 0 0 5px #c3a678,inset 4px 4px 12px #fff5,inset -5px -5px 12px #29190dbb,0 0 12px #9d4b3266}
+.bonus-dice-panel .die-pip{background:radial-gradient(circle at 30% 25%,#4e3020 0%,#160f0b 75%)}
+.bonus-dice-panel .dice-kicker,.bonus-dice-panel .dice-result strong{color:#e9c58f}
+.bonus-dice-panel .dice-result strong{text-shadow:0 0 20px #9d392c88}
+.luck-outcome.success{color:#f0d19b;border-color:#a64b39;background:linear-gradient(135deg,#4d2c22,#29251f)}
+@media(max-width:760px){
+  .section{padding:18px 15px;margin-top:15px}
+  .section:before{inset:0}
+  .section:after{inset:3px}
+}
+@media(max-width:420px){.section{padding:16px 12px}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+
+/* Felső profil: portré + alapadatok */
+.top-profile{display:grid;grid-template-columns:minmax(120px,180px) minmax(0,1fr);gap:20px;align-items:center}
+.top-portrait{width:100%}
+@media(max-width:520px){
+  .top-profile{grid-template-columns:1fr}
+  .top-portrait{width:min(100%,200px);margin:0 auto}
+}
+
+
+/* Kockadobás súgó — próbák lépésenkénti számítása */
+.trial-help-intro{color:var(--muted);font-size:.88rem;margin:0 0 14px}
+.trial-help-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.trial-card{min-width:0;padding:13px;border:1px solid #65584a;background:#171b1b;border-radius:8px}
+.trial-card h3{margin:0 0 9px;font-size:1rem}
+.trial-steps{display:grid;gap:5px;font-size:.85rem}
+.trial-step{display:flex;justify-content:space-between;gap:12px;padding-bottom:4px;border-bottom:1px dashed #494238}
+.trial-step span{color:var(--muted)}
+.trial-step strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+.trial-step.total{margin-top:3px;padding:8px 9px;border:1px solid #78613b;border-radius:6px;background:#302719;color:#ffe1a0;font-weight:800}
+.trial-step.total span{color:#e4c98f}
+.trial-waiting{color:var(--muted);font-size:.8rem;margin-top:8px}
+@media(max-width:600px){.trial-help-grid{grid-template-columns:1fr}}
+
+/* Jegyzetek */
+.notes-layout{display:grid;grid-template-columns:minmax(210px,.75fr) minmax(0,1.5fr);gap:14px}
+.notes-sidebar,.note-editor{min-width:0;padding:12px;border:1px solid #65584a;background:#171b1b;border-radius:8px}
+.notes-sidebar{display:flex;flex-direction:column;gap:9px}
+.notes-list{display:grid;gap:6px;max-height:280px;overflow:auto}
+.note-choice{width:100%;text-align:left;overflow-wrap:anywhere;background:#252522}
+.note-choice.active{border-color:var(--accent);background:#3a3020;color:#ffe1a0}
+.note-editor{display:flex;flex-direction:column;gap:10px}
+.note-editor textarea{min-height:260px;resize:vertical;line-height:1.55}
+.note-editor-actions{display:flex;gap:8px;flex-wrap:wrap}
+.note-editor-actions button{flex:1}
+.notes-empty{color:var(--muted);font-size:.88rem;padding:8px 2px}
+@media(max-width:650px){.notes-layout{grid-template-columns:1fr}.note-editor textarea{min-height:220px}}
+
+
+/* ===== Felső rögzített navigáció ===== */
+:root{--nav-h:64px}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{padding-top:var(--nav-h)}
+[id^="sec-"],#notesSection{scroll-margin-top:calc(var(--nav-h) + 8px)}
+#topNav{position:fixed;top:0;left:0;right:0;z-index:40;
+  padding-top:env(safe-area-inset-top,0px);
+  background:linear-gradient(180deg,#1d1715f2,#14171af5);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-bottom:1px solid #493a31;box-shadow:0 6px 20px #0007}
+#topNav:after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:4px;pointer-events:none;
+  background:repeating-linear-gradient(105deg,transparent 0 12px,#7b2b24 13px 15px,transparent 16px 28px);opacity:.65}
+#topNav .nav-inner{display:flex;align-items:center;gap:10px;max-width:1220px;margin:0 auto;padding:4px 10px}
+#topNav .nav-tabs{position:relative;flex:1 1 auto;min-width:0;display:flex;gap:2px;overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+#topNav .nav-tabs::-webkit-scrollbar{display:none}
+#topNav .nav-tab{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;
+  min-width:66px;min-height:0;padding:7px 10px 6px;border:0;border-bottom:2px solid transparent;border-radius:6px 6px 0 0;
+  background:transparent;color:#a89a83;
+  font-family:Impact,"Arial Narrow",sans-serif;font-size:.68rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;line-height:1}
+#topNav .nav-tab svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#topNav .nav-tab:hover{background:#2a1f1b;color:#e5d6b8;border-color:transparent;border-bottom-color:#6b3a31}
+#topNav .nav-tab.active{color:var(--accent2);background:linear-gradient(180deg,#2b1f1a,#241a17);border-bottom-color:#b0402f}
+#topNav .nav-tab.active svg{filter:drop-shadow(0 0 5px #d9a44166)}
+#topNav .nav-save{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding-left:12px;border-left:1px solid #493a31}
+#topNav .nav-timer{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;text-align:right}
+#topNav .nav-timer small{color:#a89a83;font-family:Georgia,serif;font-style:italic;font-size:.7rem}
+#topNav .nav-timer .st-short{display:none}
+#topNav .nav-timer strong{color:#ffe59a;font-variant-numeric:tabular-nums;font-size:.98rem}
+#topNav #saveBtn{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:.4rem .85rem;white-space:nowrap}
+#topNav #saveBtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:700px){
+  #topNav .nav-inner{flex-wrap:wrap;gap:2px;padding:4px 8px 0}
+  #topNav .nav-save{order:-1;width:100%;justify-content:space-between;padding:2px 2px 4px;border-left:0;border-bottom:1px solid #3a2e29}
+  #topNav .nav-timer{flex-direction:row;align-items:baseline;gap:7px}
+  #topNav .nav-timer .st-long{display:none}
+  #topNav .nav-timer .st-short{display:inline}
+  #topNav #saveBtn{min-height:34px;padding:.25rem .75rem}
+  #topNav .nav-tabs{order:1;width:100%;flex:1 1 100%}
+  #topNav .nav-tab{min-width:60px;padding:6px 8px 5px}
+}
+
+/* ===== Strigula-archívum és beváltási napló ===== */
+.archive{margin-top:14px;border:1px solid #77654c;border-radius:2px;background:linear-gradient(135deg,#2a2622,#1d2020);box-shadow:inset 0 0 0 2px #251f1a55}
+.archive>summary{display:flex;align-items:center;gap:10px;min-height:46px;padding:10px 14px;cursor:pointer;list-style:none;user-select:none}
+.archive>summary::-webkit-details-marker{display:none}
+.archive>summary::before{content:"▸";color:var(--accent2);transition:transform .15s}
+.archive[open]>summary::before{transform:rotate(90deg)}
+.archive>summary:hover{background:#ffffff08}
+.archive>summary:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
+.archive .arch-title{font-family:Impact,"Arial Narrow",sans-serif;letter-spacing:.055em;text-transform:uppercase;color:#ded0b3;font-size:.98rem}
+.archive>summary .pill{margin-left:auto}
+.archive-body{padding:2px 12px 12px}
+.archive-tools{margin-bottom:10px}
+.goal.arch{padding:8px 12px;background:linear-gradient(120deg,#4c453a,#33342d);border-color:#5d5240}
+.goal.arch .goal-name{font-size:.93rem;color:#e0d3b6}
+.goal.arch .goal-meta{margin-top:1px;font-size:.76rem}
+.goal.arch{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+.goal.arch .pill{white-space:nowrap}
+.goal.arch.arch-entry{display:block}
+.log-entry>summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;min-height:34px;cursor:pointer;list-style:none}
+.log-entry>summary::-webkit-details-marker{display:none}
+.log-entry>summary::before{content:"▸";color:var(--accent2);transition:transform .15s}
+.log-entry[open]>summary::before{transform:rotate(90deg)}
+.log-entry .log-n{font-weight:800;color:var(--accent2);font-variant-numeric:tabular-nums}
+.log-entry .log-date{color:#e0d3b6;font-size:.88rem}
+.log-entry .pill{margin-left:auto}
+.log-names{margin:8px 0 2px 22px;padding:0 0 0 16px;color:#d0c2a7;font-size:.86rem}
+.more-btn{width:100%;margin-top:10px}
+
+#pocket
+{
+  min-height: 250px;
+}
+#storyFields,textarea
+{
+  min-height: 250px;
+}
+</style>
+</head>
+<body>
+<nav id="topNav" aria-label="Oldal szakaszai">
+  <div class="nav-inner">
+    <div class="nav-tabs" role="list">
+      <button type="button" class="nav-tab" data-target="sec-profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Profil</span></button>
+      <button type="button" class="nav-tab" data-target="sec-state"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 12C19 16.5 12 21 12 21z"/></svg><span>Állapot</span></button>
+      <button type="button" class="nav-tab" data-target="sec-bonus"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12 3 14.7 9 21 9.6 16.2 13.8 17.7 20 12 16.8 6.3 20 7.8 13.8 3 9.6 9.3 9"/></svg><span>Bónuszok</span></button>
+      <button type="button" class="nav-tab" data-target="sec-actions"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 4 14 11 14 10 22 20 9 13 9"/></svg><span>Akció</span></button>
+      <button type="button" class="nav-tab" data-target="sec-dice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><g fill="currentColor" stroke="none"><circle cx="8.6" cy="8.6" r="1.2"/><circle cx="15.4" cy="8.6" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="8.6" cy="15.4" r="1.2"/><circle cx="15.4" cy="15.4" r="1.2"/></g></svg><span>Kocka</span></button>
+      <button type="button" class="nav-tab" data-target="sec-gear"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6a3 3 0 0 1 6 0"/><rect x="5" y="6" width="14" height="15" rx="3"/><path d="M9 14h6"/><path d="M9 18h6"/></svg><span>Felszerelés</span></button>
+      <button type="button" class="nav-tab" data-target="sec-goals"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M9.7 5v14M13.4 5v14M17 5v14"/><path d="M3.5 17 20.5 7"/></svg><span>Strigulák</span></button>
+      <button type="button" class="nav-tab" data-target="sec-story"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3"/></svg><span>Történet</span></button>
+      <button type="button" class="nav-tab" data-target="notesSection"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h5"/></svg><span>Jegyzetek</span></button>
+    </div>
+    <div class="nav-save">
+      <div id="saveTimer" class="nav-timer" title="A legutóbbi mentés óta eltelt idő"><small class="st-long">Utolsó mentés óta</small><small class="st-short">Mentés óta</small><strong id="saveElapsed">00:00:00</strong></div>
+      <button class="primary" id="saveBtn" title="Mentés JSON-fájlba"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="M5 20h14"/></svg><span>Mentés</span></button>
+    </div>
+  </div>
+</nav>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">ZR</div><div><h1>ZOMBIE ROAD</h1><div class="subtitle">Karakterlap · helyi fájlmentéssel</div></div></div>
+  <div class="actions">
+    <button id="newBtn">＋ Új karakter</button>
+    <button id="loadBtn">↥ Betöltés</button><input id="fileInput" type="file" accept=".json,application/json">
+    <button id="autoFileSaveBtn" title="Kiválasztott JSON-fájl automatikus frissítése">◎ Automatikus fájlmentés bekapcsolása</button>
+  </div>
+  <div id="autoFileStatus" class="note" role="status" aria-live="polite" style="width:100%;margin-top:8px">Böngészős automentés: előkészítés… · Automatikus fájlmentés: kikapcsolva.</div>
+</header>
+
+<section class="section" id="sec-profile">
+  <div class="top-profile">
+    <div class="portrait-frame top-portrait">
+      <img id="characterPortrait" class="hidden" alt="Karakter portréja">
+      <div id="portraitPlaceholder" class="portrait-placeholder">Nincs kép</div>
+    </div>
+    <div class="grid">
+      <div class="field span-12"><label for="charName">Karakter neve</label><input id="charName" data-bind="name" placeholder="Karakter neve" autocomplete="off"></div>
+      <div class="field span-6"><label for="charLevel">Karakter szint</label><div class="stepper"><button data-step="level" data-delta="-1" aria-label="Szint csökkentése">−</button><input id="charLevel" data-number="level" type="number" min="1" step="1"><button data-step="level" data-delta="1" aria-label="Szint növelése">+</button></div></div>
+      <div class="field span-6"><label for="charNotes">Mentés állapota</label><div style="padding:10px 0"><span class="pill" id="saveStatus">Nincs mentve</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sec-state">
+  <div class="section-head"><h2>Állapot</h2><span class="pill">Karakter alapértékei</span></div>
+  <div class="grid">
+    <div class="stat-card span-4">
+      <div class="stat-title">Kitartás</div><div class="stepper"><button data-step="grit" data-delta="-1" aria-label="Kitartás csökkentése">−</button><input data-number="grit" type="number" min="0" max="14"><button data-step="grit" data-delta="1" aria-label="Kitartás növelése">+</button></div>
+      <div class="meter green"><span id="gritMeter"></span></div><div class="stat-foot">0–14 · kezdőérték: 5</div>
+    </div>
+    <div class="stat-card span-4">
+      <div class="stat-title">Páncél</div><div class="stepper"><button data-step="armor" data-delta="-1" aria-label="Páncél csökkentése">−</button><input data-number="armor" type="number" min="0" max="6"><button data-step="armor" data-delta="1" aria-label="Páncél növelése">+</button></div>
+      <div class="meter blue"><span id="armorMeter"></span></div><div class="stat-foot">0–6</div>
+    </div>
+    <div class="stat-card span-4">
+      <div class="stat-title">Hátrányok összesen</div><div class="stat-value" id="disadvantageTotal">0</div>
+      <div class="meter red"><span id="disadvantageMeter"></span></div><div class="stat-foot">Automatikus összeg · 0 és −9 között</div>
+    </div>
+  </div>
+  <div class="subhead">Hátrányok részletezése</div>
+  <div class="grid">
+    <div class="field span-4"><label>Sérülés</label><div class="stepper"><button data-step="injury" data-delta="-1" aria-label="Sérülés csökkentése">−</button><input data-number="injury" type="number" min="0" max="3"><button data-step="injury" data-delta="1" aria-label="Sérülés növelése">+</button></div></div>
+    <div class="field span-4"><label>Betegség</label><div class="stepper"><button data-step="illness" data-delta="-1" aria-label="Betegség csökkentése">−</button><input data-number="illness" type="number" min="0" max="3"><button data-step="illness" data-delta="1" aria-label="Betegség növelése">+</button></div></div>
+    <div class="field span-4"><label>Kimerültség</label><div class="stepper"><button data-step="exhaustion" data-delta="-1" aria-label="Kimerültség csökkentése">−</button><input data-number="exhaustion" type="number" min="0" max="3"><button data-step="exhaustion" data-delta="1" aria-label="Kimerültség növelése">+</button></div></div>
+  </div>
+</section>
+
+<section class="section" id="sec-bonus">
+  <div class="section-head"><h2>Bónuszok</h2><span class="pill">Mindegyik 0–3</span></div>
+  <div class="subhead" style="margin-top:0">Alap bónuszok</div><div class="bonus-grid" id="coreBonuses"></div>
+  <div class="subhead">További bónuszok</div><div class="bonus-grid" id="extraBonuses"></div>
+</section>
+
+<section class="section" id="sec-actions">
+  <div class="section-head"><h2>Akciópontok</h2><button id="newRoundBtn" class="primary">↻ Új kör</button></div>
+  <div class="grid">
+    <div class="stat-card span-6">
+      <div class="stat-title">Alap AP</div><div class="stepper"><button data-step="ap" data-delta="-1" aria-label="Alap AP csökkentése">−</button><input data-number="ap" type="number" min="0" max="5"><button data-step="ap" data-delta="1" aria-label="Alap AP növelése">+</button></div>
+      <div class="meter"><span id="apMeter"></span></div><div class="stat-foot">0–5 · alapértelmezés: 2</div>
+    </div>
+    <div class="stat-card span-6">
+      <div class="stat-title">Aktuális harci AP</div><div class="stepper"><button data-step="currentAp" data-delta="-1" aria-label="Aktuális AP csökkentése">−</button><input data-number="currentAp" type="number" min="0" max="5"><button data-step="currentAp" data-delta="1" aria-label="Aktuális AP növelése">+</button></div>
+      <div class="meter"><span id="currentApMeter"></span></div><div class="stat-foot" id="currentApFoot">A körben elkölthető AP</div>
+    </div>
+  </div>
+  <div class="section-head" style="margin-top:20px"><h2>Harci súgó</h2><span class="pill">Kattintás = AP-költés</span></div>
+  <p class="note">Válassz egy cselekedetet az AP levonásához. A szabályszövegek a későbbi bővítéshez szerkeszthető adatokként szerepelnek a fájlban.</p>
+  <div id="actionList" class="action-list"></div>
+</section>
+
+<section class="section" id="sec-dice">
+  <div class="section-head"><h2>Kockadobás</h2><span class="pill">1× D6 · csak véletlen dobás</span></div>
+  <div class="dice-panel">
+    <div class="dice-stage" id="diceStage" aria-hidden="true"><div class="dice-cube" id="diceCube"></div></div>
+    <div class="dice-copy">
+      <div class="dice-kicker">ZOMBIE ROAD · D6</div>
+      <h3>Dobd el a kockát</h3>
+      <p>Egyetlen hatoldalú kocka. Az eredmény csak itt jelenik meg; semmilyen karakterértéket nem módosít, és nem kerül a mentésbe.</p>
+      <div class="dice-actions"><button type="button" class="primary dice-roll" id="rollDieBtn">⚄ DOBÁS</button><div class="dice-result waiting" id="diceResult" aria-live="polite"><strong id="diceResultValue">—</strong><span id="diceResultLabel">Vár dobásra</span></div></div>
+    <div id="lastLuckResult" class="last-luck-result">
+  Legutóbbi szerencsedobás: —
+</div>
+    </div>
+  </div>
+  
+  <div id="luckBanner" class="luck-banner hidden" role="status" aria-live="polite">
+    <strong>SZERENCSE!</strong>
+    <span>Dobj még egyet!</span>
+  </div>
+
+  <div id="bonusDicePanel" class="dice-panel bonus-dice-panel hidden">
+    <div class="dice-stage" id="bonusDiceStage" aria-hidden="true">
+      <div class="dice-cube" id="bonusDiceCube"></div>
+    </div>
+
+    <div class="dice-copy">
+      <div class="dice-kicker">ZOMBIE ROAD · SZERENCSEDOBÁS</div>
+      <h3>A szerencse kockája</h3>
+      <p>Ha 5-öst vagy 6-ost dobsz, a Kitartásod 1-gyel nő.</p>
+
+      <div class="dice-actions">
+        <button type="button" class="primary dice-roll" id="bonusRollBtn">
+          ⚄ SZERENCSÉT PRÓBÁLOK
+        </button>
+        <div class="dice-result waiting" id="bonusDiceResult" aria-live="polite">
+          <strong id="bonusDiceResultValue">—</strong>
+          <span id="bonusDiceResultLabel">Vár dobásra</span>
+        </div>
+      </div>
+
+      <div id="luckOutcome" class="luck-outcome hidden" aria-live="polite"></div>
+    </div>
+  </div>
+
+</section>
+
+<section class="section" id="trialHelpSection">
+  <div class="section-head"><h2>Kockadobás súgó</h2><span class="pill" id="trialHelpDie">Kockadobásra vár</span></div>
+  <p class="trial-help-intro">A súgó a karakter aktuális értékeiből számol. Dobás után minden próbánál megmutatja a műveletek sorrendjét és a köztes értékeket is. A karakteradatok vagy bónuszok változásakor automatikusan frissül.</p>
+  <div class="trial-help-grid" id="trialHelpGrid"></div>
+</section>
+
+<section class="section" id="sec-gear">
+  <div class="section-head"><h2>Karakter zsebe</h2><span class="pill">Szabad szöveg</span></div>
+  <textarea id="pocket" data-bind="pocket" placeholder="A karakter zsebében lévő apróságok…"></textarea>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Karakter felszerelése</h2><span class="pill">7 slot</span></div>
+  <div class="subhead" style="margin-top:0">Kézben tartott tárgyak</div><div class="slot-grid" id="handSlots"></div>
+  <div class="subhead">Hátizsák</div><div class="slot-grid" id="bagSlots"></div>
+</section>
+
+<section class="section" id="sec-goals">
+  <div class="section-head"><h2>Strigulák</h2><button class="primary" id="addGoalBtn">＋ Új strigula</button></div>
+  <div class="subhead" style="margin-top:0">Aktív célok</div><div id="activeGoals" class="goal-list"></div>
+  <div class="subhead">Teljesített célok · beváltásra várnak</div><div id="completedGoals" class="goal-list"></div>
+  <div class="goal-actions" style="margin-top:12px">
+  <button class="primary" id="redeemGoalsBtn" disabled>
+    3 strigula beváltása · Kitartás +1
+  </button>
+</div>
+<p class="note" id="redeemHint">
+  Jelölj ki pontosan 3 fel nem használt, teljesített strigulát.
+</p>
+
+<details class="archive" id="usedGoalsBox">
+  <summary><span class="arch-title">Archívum · felhasznált strigulák</span><span class="pill" id="usedGoalsCount">0</span></summary>
+  <div class="archive-body">
+    <div class="archive-tools"><input type="search" id="usedGoalsSearch" placeholder="Keresés a felhasznált strigulák között…" aria-label="Keresés a felhasznált strigulák között" autocomplete="off"></div>
+    <div id="usedGoals" class="goal-list"></div>
+    <button type="button" class="more-btn hidden" id="usedGoalsMore"></button>
+  </div>
+</details>
+
+<details class="archive" id="spendLogBox">
+  <summary><span class="arch-title">Beváltási napló</span><span class="pill" id="spendLogCount">0</span></summary>
+  <div class="archive-body">
+    <div class="archive-tools"><input type="search" id="spendLogSearch" placeholder="Keresés dátum vagy strigulanév alapján…" aria-label="Keresés a beváltási naplóban" autocomplete="off"></div>
+    <div id="goalSpendLog" class="goal-list"></div>
+    <button type="button" class="more-btn hidden" id="spendLogMore"></button>
+  </div>
+</details>
+</section>
+
+<section class="section" id="sec-story">
+  <div class="section-head"><h2>Ki vagy te?</h2><span class="pill">Karaktertörténet</span></div>
+  <div id="storyFields" class="story-grid"></div>
+</section>
+
+<section class="section echo">
+  <div class="section-head"><h2>Visszhang</h2><span class="pill">Utolsó gondolat</span></div>
+  <label class="label" for="echo">Szerinted mi lenne az utolsó gondolatod a halál előtt?</label>
+  <textarea id="echo" data-bind="echo" placeholder="…"></textarea>
+</section>
+
+<section class="section">
+  <div class="section-head"><h2>Karakterportré feltöltése</h2><span class="pill">A JSON-mentés része</span></div>
+  <p style="margin-top:0">Válassz egy képet a karakterhez. A kép a lap tetején jelenik meg, a többi adattal együtt kerül a JSON-fájlba, így betöltéskor is visszaáll.</p>
+  <input id="portraitInput" type="file" accept="image/*">
+  <div class="portrait-tools">
+    <button type="button" id="choosePortraitBtn" class="primary">＋ Kép kiválasztása</button>
+    <button type="button" id="removePortraitBtn" class="danger">Kép eltávolítása</button>
+  </div>
+  <div class="portrait-info">A kép mentés előtt a böngészőben WebP formátumra tömörül. A kép nem kerül feltöltésre sehova.</div>
+</section>
+
+
+<section class="section" id="notesSection">
+  <div class="section-head"><h2>Jegyzetek</h2><span class="pill" id="notesCount">0 jegyzet</span></div>
+  <p class="note" style="margin-top:0">Készíts külön jegyzeteket a kalandhoz, adj nekik nevet, és keress közöttük. A jegyzetek a karakter JSON-mentésébe is bekerülnek.</p>
+  <div class="notes-layout">
+    <div class="notes-sidebar">
+      <button type="button" class="primary" id="newNoteBtn">＋ Új jegyzet</button>
+      <label class="label" for="noteSearch">Jegyzet keresése név alapján</label>
+      <input id="noteSearch" type="search" placeholder="Keresés…" autocomplete="off">
+      <div id="notesList" class="notes-list" aria-label="Jegyzetek listája"></div>
+    </div>
+    <div class="note-editor" id="noteEditor">
+      <label class="label" for="noteTitle">Jegyzet neve</label>
+      <input id="noteTitle" maxlength="180" placeholder="Adj nevet a jegyzetnek…" autocomplete="off" disabled>
+      <label class="label" for="noteContent">Jegyzet szövege</label>
+      <textarea id="noteContent" placeholder="Írd ide a jegyzetet…" disabled></textarea>
+      <div class="note-editor-actions">
+        <button type="button" class="primary" id="saveNoteBtn" disabled>↓ Jegyzet mentése</button>
+        <button type="button" class="danger" id="deleteNoteBtn" disabled>Jegyzet törlése</button>
+      </div>
+      <div class="note" id="noteStatus" aria-live="polite">Válassz egy jegyzetet, vagy hozz létre újat.</div>
+    </div>
+  </div>
+</section>
+
+<div class="footer">A karakter adatai automatikusan mentődnek a böngésző tárhelyére. A JSON-fájl külön biztonsági mentésként továbbra is letölthető. Az automatikus fájlmentéshez válassz ki egy JSON-fájlt.</div>
+</div>
+
+
+
+<dialog id="goalDialog">
+  <form id="goalForm" class="modal-inner">
+    <h2>Új strigula</h2>
+    <div class="form-row"><label class="label" for="goalName">Mit szeretnél teljesíteni?</label><input id="goalName" required maxlength="180" placeholder="Például: Eljutni a csillagvizsgálóhoz"></div>
+    <div class="form-row"><label class="label" for="goalMax">A számláló maximuma</label><input id="goalMax" type="number" min="1" max="999999" value="1" required></div>
+    <div class="modal-actions"><button type="button" id="cancelGoalBtn">Mégse</button><button type="submit" class="primary">Strigula létrehozása</button></div>
+  </form>
+</dialog>
+<dialog id="confirmDialog">
+  <div class="modal-inner"><h2 id="confirmTitle">Megerősítés</h2><p id="confirmText"></p><div class="modal-actions"><button id="confirmCancel">Mégse</button><button id="confirmOk" class="primary">Folytatás</button></div></div>
+</dialog>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<div id="saveReminder" class="save-reminder hidden"
+     role="alertdialog" aria-labelledby="saveReminderTitle">
+  <h3 id="saveReminderTitle">Ideje menteni a karaktert!</h3>
+  <p>15 perc eltelt. Mentsd le JSON-fájlba a karakter aktuális állapotát, hogy megmaradjon. Légyszíves csináld meg, mert rajtad kívül senki nem tudja mi van a karakterlapon.</p>
+  <div class="save-reminder-actions">
+    <button type="button" class="primary" id="reminderSaveBtn">
+      ↓ Mentés most
+    </button>
+    <button type="button" id="reminderLaterBtn">
+      Később
+    </button>
+  </div>
+</div>
+
+<script>
+"use strict";
+const ACTIONS = [
+ {name:"Mozgás",cost:1,desc:"Egy mozgással a karakter egy távolságnyi egységet tud megtenni."},
+ {name:"Támadás",cost:1,desc:"A karakter megtámad valakit. Ehhez sikeres próbát kell dobni."},
+ {name:"Újratöltés",cost:1,desc:"Kifogyott fegyvert újra lehet tölteni. A puskába 1, az automata fegyverbe 6 golyó kerül egy töltéssel."},
+ {name:"Célzás",cost:1,desc:"Lőtávon kívülre automata fegyverekkel nem, csak puskával és nem-halálos fegyverekkel lehet lőni, célzással. Lőtávon belül vagy közelharcban a célzás +1 pontot ad a támadás próbájához, vagy +1 sebzést okozhat."},
+ {name:"Koordináció",cost:1,desc:"1 AP árán koordinálhat a két közelharci támadást végrehajtó karakter. Ilyenkor mindkét támadó +1 pontot kap a támadáshoz."},
+ {name:"Körültekintés",cost:1,desc:"Alaposan körülnézel."},
+ {name:"Tárgycsere",cost:1,desc:"Elteszed a kezedben lévő tárgyat és előveszel egy másikat, használatra készen."},
+ {name:"Rögtönzött védelem",cost:1,desc:"A környezetedből egy elszórt tárgyat használsz átmeneti védelemként. Ez 1 Páncélt ad, és kézben tartott tárgynak számít. AP költése nélkül eldobhatod."},
+ {name:"Szabad cselekedet",cost:2,desc:"A karakter megpróbál valamilyen nem támadó vagy mozgó cselekedetet végrehajtani, például tereptárgyat használni."},
+ {name:"Gyógyítás",cost:2,desc:"Megpróbálsz meggyógyítani egy karaktert, szereplőt vagy akár magadat. Próbát kell dobni a sikerhez."},
+ {name:"Stabilizálás",cost:2,desc:"Megpróbálsz stabilizálni egy karaktert, akinek nincs több Kitartása. Sikeres próba esetén a karakter 1 Kitartást kap."},
+ {name:"Rejtőzés",cost:2,desc:"Megpróbálsz elbújni vagy elrejteni valamit. Rejtőzésből +1 pontot kapsz a támadáshoz, és amíg rejtőzöl, nem vagy támadható. Amint kitámadsz, újra támadható leszel."},
+ {name:"Összecsapott-barkácsolás",cost:3,desc:"Gyorsan összecsapsz egy, az adott szituációban nélkülözhetetlen barkácsolást a rendelkezésre álló anyagokból."},
+ {name:"Hőstett",cost:3,desc:"Egy ellenfelet, akinek 3 vagy kevesebb Kitartása van, azonnal legyőzöl, akár meg is ölhetsz támadás nélkül. A Próba vagy Párbaj dobáshoz +1 pontot adhatsz."}
+];
+const CORE_BONUSES = [{key:"esz",label:"ÉSZ"},{key:"ero",label:"ERŐ"}];
+const EXTRA_BONUSES = [{key:"craft",label:"Barkácsolás"},{key:"diplomacy",label:"Diplomácia"},{key:"healing",label:"Gyógyítás"},{key:"stealth",label:"Lopakodás"},{key:"observation",label:"Megfigyelés"}];
+const STORY = [
+ ["outbreak","Hol voltál és mit csináltál, mikor kitört a zombi kór?"],
+ ["firstDays","Mit csináltál az első pár napban?"],
+ ["survival","Mit csináltál eddig, hogy túlélj?"],
+ ["firstZombie","Milyen volt az első találkozásod egy zombival?"],
+ ["fear","Mi az, amitől félsz, hogy meg kell tenned?"],
+ ["greatestAct","Mi volt a legnagyobb dolog, amit eddig tettél a túlélésért?"],
+ ["desire","Mi az, aminek nem tudsz ellenállni? Mire vágysz a legjobban?"]
+];
+const defaults = () => ({
+ version:1,name:"",imageData:"",level:1,grit:5,armor:0,injury:0,illness:0,exhaustion:0,ap:2,currentAp:2,
+ bonuses:{esz:0,ero:0,craft:0,diplomacy:0,healing:0,stealth:0,observation:0},
+ pocket:"",equipment:Array.from({length:7},()=>({name:"",description:""})),
+ goals:[],completedGoals:[],spentLog:[],story:{outbreak:"",firstDays:"",survival:"",firstZombie:"",fear:"",greatestAct:"",desire:""},echo:"",notes:[],activeNoteId:""
+});
+let state=defaults(), toastTimer, confirmResolver=null, savedName="";
+const selectedCompletedGoals = new Set();
+let diceRollTimer = null, diceX = -12, diceY = -24;
+let latestDiceRoll = null;
+const $ = id => document.getElementById(id);
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,Number.isFinite(Number(v))?Math.trunc(Number(v)):min));
+function toast(msg){const el=$("toast");el.textContent=msg;el.classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add("hidden"),2600)}
+function markDirty(){
+  $("saveStatus").textContent="Módosítás folyamatban…";
+  $("saveStatus").className="pill warn";
+  localAutosavePending = true;
+  scheduleLocalAutosave();
+  scheduleAutoFileSave();
+}
+function setNum(key,val){const limits={level:[1,999],grit:[0,14],armor:[0,6],injury:[0,3],illness:[0,3],exhaustion:[0,3],ap:[0,5],currentAp:[0,5]};const [min,max]=limits[key];state[key]=clamp(val,min,max);if(key==="ap"&&state.currentAp>state.ap)state.currentAp=state.ap;if(key==="currentAp"&&state.currentAp>state.ap)state.currentAp=state.ap;renderNumbers();markDirty()}
+function renderNumbers(){
+ document.querySelectorAll("[data-number]").forEach(el=>{const k=el.dataset.number;el.value=state[k]});
+ $("gritMeter").style.width=(state.grit/14*100)+"%";$("armorMeter").style.width=(state.armor/6*100)+"%";
+ const d=state.injury+state.illness+state.exhaustion;$("disadvantageTotal").textContent=d===0?"0":"−"+d;$("disadvantageMeter").style.width=(d/9*100)+"%";
+ $("apMeter").style.width=(state.ap/5*100)+"%";$("currentApMeter").style.width=(state.ap?state.currentAp/state.ap*100:0)+"%";
+ $("currentApFoot").textContent=`${state.currentAp} elkölthető AP · alap AP: ${state.ap}`;
+ document.querySelectorAll("[data-step]").forEach(btn=>{const k=btn.dataset.step;const lim={level:[1,999],grit:[0,14],armor:[0,6],injury:[0,3],illness:[0,3],exhaustion:[0,3],ap:[0,5],currentAp:[0,state.ap]}[k];btn.disabled=state[k]<=lim[0]&&Number(btn.dataset.delta)<0||state[k]>=lim[1]&&Number(btn.dataset.delta)>0});
+ renderTrialHelp();
+}
+function renderBonuses(){
+ for(const [id,items] of [["coreBonuses",CORE_BONUSES],["extraBonuses",EXTRA_BONUSES]]){
+  const host=$(id);host.innerHTML="";
+  items.forEach(item=>{const box=document.createElement("div");box.className="bonus";box.innerHTML=`<div class="stat-title">${item.label}</div><div class="stepper"><button type="button" data-bonus="${item.key}" data-delta="-1" aria-label="${item.label} csökkentése">−</button><input type="number" min="0" max="3" data-bonus-value="${item.key}" aria-label="${item.label} értéke"><button type="button" data-bonus="${item.key}" data-delta="1" aria-label="${item.label} növelése">+</button></div><div class="meter"><span data-bonus-meter="${item.key}"></span></div>`;
+  host.appendChild(box);
+  });
+ }
+ document.querySelectorAll("[data-bonus-value]").forEach(el=>el.value=state.bonuses[el.dataset.bonusValue]||0);
+ updateBonusMeters();
+}
+function updateBonusMeters(){document.querySelectorAll("[data-bonus-meter]").forEach(el=>el.style.width=((state.bonuses[el.dataset.bonusMeter]||0)/3*100)+"%");document.querySelectorAll("[data-bonus]").forEach(btn=>{const v=state.bonuses[btn.dataset.bonus]||0;btn.disabled=v<=0&&btn.dataset.delta==="-1"||v>=3&&btn.dataset.delta==="1"});renderTrialHelp()}
+function renderTrialHelp(){
+ const host=$("trialHelpGrid");
+ if(!host||!state||!state.bonuses)return;
+ const b=state.bonuses;
+ const die=latestDiceRoll;
+ const trials=[
+  {name:"Erőpróba",steps:[{label:"Erő",op:"base",value:b.ero},{label:"Kockadobás",op:"+",value:die},{label:"Sérülés",op:"−",value:state.injury},{label:"Kimerültség",op:"−",value:state.exhaustion}]},
+  {name:"Észpróba",steps:[{label:"Ész",op:"base",value:b.esz},{label:"Kockadobás",op:"+",value:die},{label:"Betegség",op:"−",value:state.illness},{label:"Kimerültség",op:"−",value:state.exhaustion}]},
+  {name:"Barkácsolás próba",steps:[{label:"Ész",op:"base",value:b.esz},{label:"Erő",op:"+",value:b.ero},{label:"Kockadobás",op:"+",value:die},{label:"Barkácsolás bónusz",op:"+",value:b.craft},{label:"Betegség",op:"−",value:state.illness},{label:"Kimerültség",op:"−",value:state.exhaustion},{label:"Sérülés",op:"−",value:state.injury}]},
+  {name:"Diplomácia próba",steps:[{label:"Ész",op:"base",value:b.esz},{label:"Kockadobás",op:"+",value:die},{label:"Diplomácia bónusz",op:"+",value:b.diplomacy},{label:"Betegség",op:"−",value:state.illness},{label:"Kimerültség",op:"−",value:state.exhaustion}]},
+  {name:"Gyógyítás próba",steps:[{label:"Ész",op:"base",value:b.esz},{label:"Kockadobás",op:"+",value:die},{label:"Gyógyítás bónusz",op:"+",value:b.healing},{label:"Betegség",op:"−",value:state.illness},{label:"Kimerültség",op:"−",value:state.exhaustion}]},
+  {name:"Lopakodás próba",steps:[{label:"Erő",op:"base",value:b.ero},{label:"Kockadobás",op:"+",value:die},{label:"Lopakodás bónusz",op:"+",value:b.stealth},{label:"Sérülés",op:"−",value:state.injury},{label:"Kimerültség",op:"−",value:state.exhaustion}]},
+  {name:"Megfigyelés próba",steps:[{label:"Ész",op:"base",value:b.esz},{label:"Kockadobás",op:"+",value:die},{label:"Megfigyelés bónusz",op:"+",value:b.observation},{label:"Betegség",op:"−",value:state.illness},{label:"Kimerültség",op:"−",value:state.exhaustion}]}
+ ];
+ $("trialHelpDie").textContent=die===null?"Kockadobásra vár":"Aktuális kocka: "+die;
+ host.innerHTML="";
+ trials.forEach(trial=>{
+  const card=document.createElement("article");card.className="trial-card";
+  const title=document.createElement("h3");title.textContent=trial.name;card.appendChild(title);
+  const steps=document.createElement("div");steps.className="trial-steps";
+  let total=0,started=false;
+  trial.steps.forEach(step=>{
+   const row=document.createElement("div");row.className="trial-step";
+   const label=document.createElement("span");label.textContent=step.label;
+   const value=document.createElement("strong");
+   if(step.value===null){
+    value.textContent="— (dobásra vár)";
+   }else{
+    const n=Number(step.value)||0;
+    if(step.op==="base"){total=n;started=true;value.textContent=String(n)}
+    else if(die===null){value.textContent=`${step.op} ${n}`}
+    else if(!started){total=n;started=true;value.textContent=String(n)}
+    else {total += step.op==="−" ? -n : n;value.textContent=`${step.op} ${n} → ${total}`}
+   }
+   row.append(label,value);steps.appendChild(row);
+  });
+  card.appendChild(steps);
+  const final=document.createElement("div");final.className="trial-step total";
+  const finalLabel=document.createElement("span");finalLabel.textContent="Próba végértéke";
+  const finalValue=document.createElement("strong");finalValue.textContent=die===null?"Dobásra vár":String(total);
+  final.append(finalLabel,finalValue);card.appendChild(final);
+  if(die===null){const waiting=document.createElement("div");waiting.className="trial-waiting";waiting.textContent="Dobj a fenti kockával a végérték kiszámításához.";card.appendChild(waiting)}
+  host.appendChild(card);
+ });
+}
+
+function renderActions(){
+ const host=$("actionList");host.innerHTML="";
+ ACTIONS.forEach((a,i)=>{const btn=document.createElement("button");btn.type="button";btn.className="action-card"+(state.currentAp<a.cost?" spent":"");btn.disabled=state.currentAp<a.cost;btn.innerHTML=`<span class="cost">${a.cost} AP</span><span><strong>${a.name}</strong><small>${a.desc}</small></span>`;btn.addEventListener("click",()=>{if(state.currentAp<a.cost)return;state.currentAp-=a.cost;renderNumbers();renderActions();markDirty();toast(`${a.name}: −${a.cost} AP`)});host.appendChild(btn)});
+}
+function renderEquipment(){
+ const hand=$("handSlots"),bag=$("bagSlots");hand.innerHTML="";bag.innerHTML="";
+ state.equipment.forEach((item,i)=>{const el=document.createElement("div");el.className="slot";el.innerHTML=`<div class="slot-label">${i<3?"Kéz "+(i+1):"Hátizsák "+(i-2)}</div><input data-gear-name="${i}" aria-label="Tárgy neve" placeholder="Tárgy neve"><textarea data-gear-desc="${i}" aria-label="Tárgy leírása" placeholder="Leírás (opcionális)"></textarea>`;(i<3?hand:bag).appendChild(el)});
+ document.querySelectorAll("[data-gear-name]").forEach(el=>el.value=state.equipment[Number(el.dataset.gearName)]?.name||"");
+ document.querySelectorAll("[data-gear-desc]").forEach(el=>el.value=state.equipment[Number(el.dataset.gearDesc)]?.description||"");
+}
+
+function renderGoals(){
+ const active=$("activeGoals"),done=$("completedGoals");
+ active.innerHTML="";
+ done.innerHTML="";
+
+ if(!state.goals.length)
+  active.innerHTML='<div class="empty">Nincs aktív strigula. Hozz létre egyet a „+ Új strigula” gombbal.</div>';
+
+ state.goals.forEach(g=>active.appendChild(goalElement(g,false)));
+
+ const pending=state.completedGoals.filter(g=>!g.used);
+
+ if(!state.completedGoals.length)
+  done.innerHTML='<div class="empty">Még nincs teljesített cél.</div>';
+ else if(!pending.length)
+  done.innerHTML='<div class="empty">Nincs beváltásra váró teljesített strigula. A felhasználtak az archívumban olvashatók.</div>';
+
+ pending.forEach(g=>done.appendChild(goalElement(g,true)));
+
+ updateRedeemButton();
+ renderUsedGoals();
+ renderSpendLog();
+}
+
+function updateRedeemButton(){
+ const selected=[...selectedCompletedGoals].filter(id=>
+  state.completedGoals.some(g=>g.id===id&&!g.used)
+ );
+
+ const btn=$("redeemGoalsBtn");
+ const hint=$("redeemHint");
+
+ btn.disabled=selected.length!==3||state.grit>=14;
+
+ if(state.grit>=14){
+  hint.textContent="A Kitartás elérte a maximumot (14). Előbb csökkentened kell, ha beváltást szeretnél.";
+ }else if(selected.length===3){
+  hint.textContent="3 strigula kijelölve. Beváltással a Kitartás +1 lesz.";
+ }else{
+  hint.textContent=`Még ${3-selected.length} strigulát jelölj ki a beváltáshoz.`;
+ }
+}
+
+const ARCHIVE_PAGE=10;
+let usedGoalsShown=ARCHIVE_PAGE,spendLogShown=ARCHIVE_PAGE;
+const normText=v=>String(v==null?"":v).toLocaleLowerCase("hu");
+
+function updateMoreButton(btn,total,shown){
+ btn.dataset.total=String(total);
+ if(total<=ARCHIVE_PAGE){btn.classList.add("hidden");return}
+ btn.classList.remove("hidden");
+ btn.textContent=shown<total?`Továbbiak mutatása (még ${total-shown})`:"Kevesebb mutatása";
+}
+
+function renderUsedGoals(){
+ const host=$("usedGoals"),more=$("usedGoalsMore");
+ host.innerHTML="";
+ const all=state.completedGoals.filter(g=>g.used).slice().reverse();
+ $("usedGoalsCount").textContent=all.length;
+
+ if(!all.length){
+  host.innerHTML='<div class="empty">Még nincs felhasznált strigula.</div>';
+  more.classList.add("hidden");
+  return;
+ }
+
+ const q=normText($("usedGoalsSearch").value.trim());
+ const list=q?all.filter(g=>normText(g.name).includes(q)):all;
+ if(!list.length){
+  host.innerHTML='<div class="empty">Nincs találat.</div>';
+  more.classList.add("hidden");
+  return;
+ }
+
+ list.slice(0,usedGoalsShown).forEach(g=>{
+  const el=document.createElement("div");el.className="goal arch";
+  const left=document.createElement("div");
+  const name=document.createElement("div");name.className="goal-name";name.textContent=g.name;
+  const meta=document.createElement("div");meta.className="goal-meta";
+  let text=`Teljesítve · ${g.count}/${g.max}`;
+  if(g.completedAt){
+   const d=new Date(g.completedAt);
+   if(!Number.isNaN(d.getTime()))text+=" · "+d.toLocaleDateString("hu-HU");
+  }
+  meta.textContent=text;
+  left.append(name,meta);
+  const tag=document.createElement("span");tag.className="pill good";tag.textContent="✓ Naplózva";
+  el.append(left,tag);
+  host.appendChild(el);
+ });
+ updateMoreButton(more,list.length,usedGoalsShown);
+}
+
+function renderSpendLog(){
+ const host=$("goalSpendLog"),more=$("spendLogMore");
+ host.innerHTML="";
+ $("spendLogCount").textContent=state.spentLog.length;
+
+ if(!state.spentLog.length){
+  host.innerHTML='<div class="empty">Még nem váltottál be strigulát.</div>';
+  more.classList.add("hidden");
+  return;
+ }
+
+ const fmt=entry=>{
+  const d=new Date(entry.date);
+  return Number.isNaN(d.getTime())?"Ismeretlen dátum":d.toLocaleString("hu-HU");
+ };
+ const q=normText($("spendLogSearch").value.trim());
+ const all=state.spentLog.map((entry,i)=>({entry,n:i+1})).reverse();
+ const list=q?all.filter(({entry})=>normText(fmt(entry)+" "+(entry.names||[]).join(" ")).includes(q)):all;
+
+ if(!list.length){
+  host.innerHTML='<div class="empty">Nincs találat.</div>';
+  more.classList.add("hidden");
+  return;
+ }
+
+ list.slice(0,spendLogShown).forEach(({entry,n})=>{
+  const el=document.createElement("div");el.className="goal arch arch-entry";
+  const det=document.createElement("details");det.className="log-entry";
+  const sum=document.createElement("summary");
+  const num=document.createElement("span");num.className="log-n";num.textContent="#"+n;
+  const date=document.createElement("span");date.className="log-date";date.textContent=fmt(entry);
+  const grit=document.createElement("span");grit.className="pill good";grit.textContent=`Kitartás: ${entry.gritBefore} → ${entry.gritAfter}`;
+  sum.append(num,date,grit);
+  const ul=document.createElement("ul");ul.className="log-names";
+  (entry.names||[]).forEach(nm=>{const li=document.createElement("li");li.textContent=nm;ul.appendChild(li)});
+  det.append(sum,ul);
+  el.appendChild(det);
+  host.appendChild(el);
+ });
+ updateMoreButton(more,list.length,spendLogShown);
+}
+
+$("usedGoalsSearch").addEventListener("input",()=>{usedGoalsShown=ARCHIVE_PAGE;renderUsedGoals()});
+$("spendLogSearch").addEventListener("input",()=>{spendLogShown=ARCHIVE_PAGE;renderSpendLog()});
+$("usedGoalsMore").addEventListener("click",e=>{const t=+e.currentTarget.dataset.total||0;usedGoalsShown=usedGoalsShown<t?usedGoalsShown+ARCHIVE_PAGE:ARCHIVE_PAGE;renderUsedGoals()});
+$("spendLogMore").addEventListener("click",e=>{const t=+e.currentTarget.dataset.total||0;spendLogShown=spendLogShown<t?spendLogShown+ARCHIVE_PAGE:ARCHIVE_PAGE;renderSpendLog()});
+
+function redeemSelectedGoals(){
+ const selected=[...selectedCompletedGoals];
+ const goals=selected.map(id=>
+  state.completedGoals.find(g=>g.id===id&&!g.used)
+ );
+
+ if(goals.length!==3||goals.some(g=>!g)||state.grit>=14){
+  toast("A beváltás feltételei nem teljesülnek.");
+  updateRedeemButton();
+  return;
+ }
+
+ const gritBefore=state.grit;
+
+ goals.forEach(g=>{
+  g.used=true;
+  selectedCompletedGoals.delete(g.id);
+ });
+
+ state.grit++;
+
+ state.spentLog.push({
+  date:new Date().toISOString(),
+  names:goals.map(g=>g.name),
+  gritBefore,
+  gritAfter:state.grit
+ });
+
+ renderNumbers();
+ renderGoals();
+ markDirty();
+ toast("3 strigula felhasználva. Kitartás +1.");
+}
+
+function goalElement(g,completed){
+ const el=document.createElement("div");el.className="goal"+(completed?" completed":"");
+ const left=document.createElement("div");const name=document.createElement("div");name.className="goal-name";name.textContent=g.name;left.appendChild(name);
+ const meta=document.createElement("div");meta.className="goal-meta";meta.textContent=completed?`Teljesítve · ${g.count}/${g.max}`:`Haladás: ${g.count}/${g.max}`;left.appendChild(meta);
+ if(!completed){const meter=document.createElement("div");meter.className="meter";const fill=document.createElement("span");fill.style.width=Math.min(100,g.count/g.max*100)+"%";meter.appendChild(fill);left.appendChild(meter)}
+ const controls=document.createElement("div");controls.className="goal-controls";
+ if(!completed){
+  const minus=document.createElement("button");minus.className="small";minus.textContent="−";minus.setAttribute("aria-label","Strigula csökkentése");minus.disabled=g.count<=0;minus.onclick=()=>{g.count=Math.max(0,g.count-1);renderGoals();markDirty()};
+  const count=document.createElement("div");count.className="goal-count";count.textContent=`${g.count} / ${g.max}`;
+  const plus=document.createElement("button");plus.className="small";plus.textContent="+";plus.setAttribute("aria-label","Strigula növelése");plus.disabled=g.count>=g.max;plus.onclick=()=>{g.count=Math.min(g.max,g.count+1);renderGoals();markDirty()};
+  controls.append(minus,count,plus);el.append(left,controls);
+  const actions=document.createElement("div");actions.className="goal-actions";actions.style.gridColumn="1 / -1";
+  if(g.count>=g.max){const complete=document.createElement("button");complete.className="primary small";complete.textContent="✓ Áthelyezés a teljesítettek közé";complete.onclick=()=>{state.goals=state.goals.filter(x=>x.id!==g.id);state.completedGoals.push({...g,completedAt:new Date().toISOString()});renderGoals();markDirty();toast("A strigula teljesítettként elmentve.")};actions.appendChild(complete)}
+  const del=document.createElement("button");del.className="danger small";del.textContent="Törlés";del.onclick=()=>{state.goals=state.goals.filter(x=>x.id!==g.id);renderGoals();markDirty()};actions.appendChild(del);el.appendChild(actions);
+
+}else{
+  if(g.used){
+   const used=document.createElement("span");
+   used.className="pill";
+   used.textContent="Felhasználva";
+   controls.appendChild(used);
+  }else{
+   const label=document.createElement("label");
+   label.style.display="flex";
+   label.style.alignItems="center";
+   label.style.gap="7px";
+   label.style.cursor="pointer";
+   label.style.fontSize=".85rem";
+   label.style.color="var(--muted)";
+
+   const checkbox=document.createElement("input");
+   checkbox.type="checkbox";
+   checkbox.style.width="18px";
+   checkbox.style.height="18px";
+   checkbox.style.margin="0";
+   checkbox.checked=selectedCompletedGoals.has(g.id);
+   checkbox.setAttribute("aria-label",g.name+" kijelölése beváltáshoz");
+   checkbox.addEventListener("change",()=>{
+    if(checkbox.checked){
+     if(selectedCompletedGoals.size>=3){
+      checkbox.checked=false;
+      toast("Egyszerre pontosan 3 strigula jelölhető ki.");
+      return;
+     }
+     selectedCompletedGoals.add(g.id);
+    }else{
+     selectedCompletedGoals.delete(g.id);
+    }
+    updateRedeemButton();
+   });
+
+   label.append(checkbox,document.createTextNode("Beváltásra kijelöl"));
+   controls.appendChild(label);
+  }
+
+  const lock=document.createElement("span");
+  lock.className="pill good";
+  lock.textContent=g.used?"✓ Naplózva":"✓ Teljesítve";
+  controls.appendChild(lock);
+  el.append(left,controls);
+}
+
+ return el;
+}
+function renderStory(){
+ const host=$("storyFields");host.innerHTML="";
+ STORY.forEach(([key,label])=>{const wrap=document.createElement("div");wrap.className="story-field";const lab=document.createElement("label");lab.htmlFor="story_"+key;lab.textContent=label;const ta=document.createElement("textarea");ta.id="story_"+key;ta.dataset.story=key;ta.placeholder="Írd le a karaktered történetét…";ta.value=state.story[key]||"";wrap.append(lab,ta);host.appendChild(wrap)});
+}
+
+
+const DIE_PIPS = {
+  1: [5],
+  2: [1, 9],
+  3: [1, 5, 9],
+  4: [1, 3, 7, 9],
+  5: [1, 3, 5, 7, 9],
+  6: [1, 3, 4, 6, 7, 9]
+};
+
+const DIE_ORIENTATION = {
+  1: [0, 0],
+  6: [0, 180],
+  3: [0, -90],
+  4: [0, 90],
+  2: [-90, 0],
+  5: [90, 0]
+};
+
+let bonusDiceX = -12;
+let bonusDiceY = -24;
+let bonusDiceTimer = null;
+let luckPending = false;
+
+function setupCube(cube) {
+  cube.innerHTML = "";
+
+  [1, 2, 3, 4, 5, 6].forEach(value => {
+    const face = document.createElement("div");
+    face.className = `dice-face face-${value}`;
+    face.setAttribute("aria-hidden", "true");
+
+    for (let i = 1; i <= 9; i++) {
+      const pip = document.createElement("span");
+      pip.className =
+        "die-pip" + (DIE_PIPS[value].includes(i) ? " on" : "");
+      face.appendChild(pip);
+    }
+
+    cube.appendChild(face);
+  });
+}
+
+function setupDie() {
+  setupCube($("diceCube"));
+  setupCube($("bonusDiceCube"));
+
+  $("rollDieBtn").addEventListener("click", rollDie);
+  $("bonusRollBtn").addEventListener("click", rollBonusDie);
+}
+
+function nextAngle(current, base) {
+  return current + 720 + (((base - (current % 360)) + 360) % 360);
+}
+
+function rollDie() {
+  const btn = $("rollDieBtn");
+  const cube = $("diceCube");
+  const stage = $("diceStage");
+  const result = $("diceResult");
+
+  if (btn.disabled || luckPending) return;
+
+  btn.disabled = true;
+  stage.classList.add("rolling");
+  result.classList.add("waiting");
+
+  $("diceResultValue").textContent = "…";
+  $("diceResultLabel").textContent = "Gurul…";
+
+  const value = Math.floor(Math.random() * 6) + 1;
+  const [baseX, baseY] = DIE_ORIENTATION[value];
+
+  diceX = nextAngle(diceX, baseX);
+  diceY = nextAngle(diceY, baseY);
+
+  cube.style.transform = `rotateX(${diceX}deg) rotateY(${diceY}deg)`;
+
+  clearTimeout(diceRollTimer);
+
+  diceRollTimer = setTimeout(() => {
+    stage.classList.remove("rolling");
+    result.classList.remove("waiting");
+
+    $("diceResultValue").textContent = String(value);
+    $("diceResultLabel").textContent = "Dobás eredménye";
+    latestDiceRoll = value;
+    renderTrialHelp();
+
+    if (value === 6) {
+      luckPending = true;
+
+      $("luckBanner").classList.remove("hidden");
+      $("bonusDicePanel").classList.remove("hidden");
+      $("luckOutcome").classList.add("hidden");
+
+      $("bonusDiceResult").classList.add("waiting");
+      $("bonusDiceResultValue").textContent = "—";
+      $("bonusDiceResultLabel").textContent = "Vár dobásra";
+
+      $("bonusRollBtn").disabled = false;
+      toast("SZERENCSE! Következik a szerencsedobás.");
+    } else {
+      btn.disabled = false;
+    }
+  }, 1380);
+}
+
+function rollBonusDie() {
+  const btn = $("bonusRollBtn");
+  const cube = $("bonusDiceCube");
+  const stage = $("bonusDiceStage");
+  const result = $("bonusDiceResult");
+  const outcome = $("luckOutcome");
+
+  if (btn.disabled || !luckPending) return;
+
+  btn.disabled = true;
+  stage.classList.add("rolling");
+  result.classList.add("waiting");
+  outcome.classList.add("hidden");
+  outcome.classList.remove("success", "failure");
+
+  $("bonusDiceResultValue").textContent = "…";
+  $("bonusDiceResultLabel").textContent = "Gurul…";
+
+  const value = Math.floor(Math.random() * 6) + 1;
+  $("lastLuckResult").innerHTML =
+  `Legutóbbi szerencsedobás: <strong>${value}</strong>`;
+  const [baseX, baseY] = DIE_ORIENTATION[value];
+
+  bonusDiceX = nextAngle(bonusDiceX, baseX);
+  bonusDiceY = nextAngle(bonusDiceY, baseY);
+
+  cube.style.transform =
+    `rotateX(${bonusDiceX}deg) rotateY(${bonusDiceY}deg)`;
+
+  clearTimeout(bonusDiceTimer);
+
+  bonusDiceTimer = setTimeout(() => {
+    stage.classList.remove("rolling");
+    result.classList.remove("waiting");
+
+    $("bonusDiceResultValue").textContent = String(value);
+    $("bonusDiceResultLabel").textContent = "Szerencsedobás";
+
+    if (value >= 5) {
+      if (state.grit < 14) {
+        const before = state.grit;
+        state.grit = Math.min(14, state.grit + 1);
+
+        renderNumbers();
+        renderGoals();
+        markDirty();
+
+        outcome.textContent =
+          `SIKER! Kitartás: ${before} → ${state.grit}`;
+        outcome.classList.add("success");
+
+        toast("Szerencse! Kitartás +1.");
+      } else {
+        outcome.textContent =
+          "SIKERES DOBÁS! A Kitartás már elérte a maximumot (14).";
+        outcome.classList.add("success");
+
+        toast("A Kitartás már maximumon van.");
+      }
+    } else {
+      outcome.textContent =
+        "A szerencse most elmaradt. A Kitartás nem változik.";
+      outcome.classList.add("failure");
+    }
+
+    outcome.classList.remove("hidden");
+
+    // A normál kocka újra használható, a szerencsekocka
+    // pedig rövid eredményjelzés után eltűnik.
+    luckPending = false;
+    $("rollDieBtn").disabled = false;
+
+    setTimeout(() => {
+      $("bonusDicePanel").classList.add("hidden");
+      $("luckBanner").classList.add("hidden");
+      outcome.classList.add("hidden");
+    }, 2200);
+
+  }, 1380);
+}
+
+
+
+function renderPortrait(){
+ const img=$("characterPortrait"),placeholder=$("portraitPlaceholder");
+ if(typeof state.imageData==="string"&&state.imageData.startsWith("data:image/")){
+  img.src=state.imageData;img.classList.remove("hidden");placeholder.classList.add("hidden");
+ }else{
+  img.removeAttribute("src");img.classList.add("hidden");placeholder.classList.remove("hidden");
+ }
+}
+function activeNote(){return state.notes.find(n=>n.id===state.activeNoteId)||null}
+function renderNotes(){
+ const host=$("notesList"),active=activeNote(),query=$("noteSearch").value.trim().toLocaleLowerCase("hu-HU");
+ host.innerHTML="";
+ $("notesCount").textContent=state.notes.length+ (state.notes.length===1?" jegyzet":" jegyzet");
+ const filtered=state.notes.filter(n=>(n.title||"").toLocaleLowerCase("hu-HU").includes(query));
+ if(!filtered.length){const empty=document.createElement("div");empty.className="notes-empty";empty.textContent=state.notes.length?"Nincs ilyen nevű jegyzet.":"Még nincs jegyzeted.";host.appendChild(empty)}
+ filtered.forEach(note=>{const btn=document.createElement("button");btn.type="button";btn.className="note-choice"+(note.id===state.activeNoteId?" active":"");btn.textContent=note.title||"Névtelen jegyzet";btn.addEventListener("click",()=>selectNote(note.id));host.appendChild(btn)});
+ const enabled=!!active;
+ $("noteTitle").disabled=!enabled;$("noteContent").disabled=!enabled;$("saveNoteBtn").disabled=!enabled;$("deleteNoteBtn").disabled=!enabled;
+ $("noteTitle").value=active?.title||"";$("noteContent").value=active?.content||"";
+ $("noteStatus").textContent=active?"A szerkesztésed automatikusan bekerül a böngészős mentésbe. A „Jegyzet mentése” gombbal külön is elmentheted a módosításokat.":"Válassz egy jegyzetet, vagy hozz létre újat.";
+}
+function selectNote(id){state.activeNoteId=id;renderNotes()}
+function createNote(){
+ const id=crypto.randomUUID?crypto.randomUUID():"note-"+Date.now()+"-"+Math.random().toString(36).slice(2);
+ state.notes.push({id,title:"Új jegyzet",content:""});state.activeNoteId=id;
+ renderNotes();$("noteTitle").focus();$("noteTitle").select();markDirty();
+}
+function saveActiveNote(){
+ const note=activeNote();if(!note)return;
+ note.title=$("noteTitle").value.trim()||"Névtelen jegyzet";note.content=$("noteContent").value;
+ renderNotes();markDirty();$("noteStatus").textContent="Jegyzet elmentve.";toast("Jegyzet elmentve.");
+}
+async function deleteActiveNote(){
+ const note=activeNote();if(!note)return;
+ const ok=await askConfirm("Jegyzet törlése",`Véglegesen törlöd ezt a jegyzetet: „${note.title||"Névtelen jegyzet"}”? A törlés a következő mentésbe is bekerül.`);
+ if(!ok)return;
+ const index=state.notes.findIndex(n=>n.id===note.id);if(index>=0)state.notes.splice(index,1);
+ state.activeNoteId=state.notes[Math.min(index,state.notes.length-1)]?.id||"";
+ renderNotes();markDirty();toast("Jegyzet törölve.");
+}
+function renderAll(){
+ $("charName").value=state.name||"";$("pocket").value=state.pocket||"";$("echo").value=state.echo||"";
+ renderPortrait();renderNumbers();renderBonuses();renderActions();renderEquipment();renderGoals();renderStory();renderNotes();
+}
+function readFromUI(){
+ state.name=$("charName").value;state.pocket=$("pocket").value;state.echo=$("echo").value;
+ document.querySelectorAll("[data-story]").forEach(el=>state.story[el.dataset.story]=el.value);
+ document.querySelectorAll("[data-gear-name]").forEach(el=>{const i=Number(el.dataset.gearName);state.equipment[i].name=el.value});
+ document.querySelectorAll("[data-gear-desc]").forEach(el=>{const i=Number(el.dataset.gearDesc);state.equipment[i].description=el.value});
+}
+function normalize(raw){
+ const d=defaults();if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error("A fájl nem érvényes karaktermentés.");
+ const out={...d};
+ out.name=typeof raw.name==="string"?raw.name:"";out.imageData=typeof raw.imageData==="string"&&raw.imageData.startsWith("data:image/")?raw.imageData:"";out.level=clamp(raw.level??1,1,999);
+ for(const [k,min,max,def] of [["grit",0,14,5],["armor",0,6,0],["injury",0,3,0],["illness",0,3,0],["exhaustion",0,3,0],["ap",0,5,2],["currentAp",0,5,raw.ap??2]])out[k]=clamp(raw[k]??def,min,max);
+ out.currentAp=Math.min(out.currentAp,out.ap);
+ out.bonuses={...d.bonuses};if(raw.bonuses&&typeof raw.bonuses==="object")Object.keys(out.bonuses).forEach(k=>out.bonuses[k]=clamp(raw.bonuses[k]??0,0,3));
+ out.pocket=typeof raw.pocket==="string"?raw.pocket:"";
+ if(Array.isArray(raw.equipment))out.equipment=d.equipment.map((x,i)=>({name:typeof raw.equipment[i]?.name==="string"?raw.equipment[i].name:"",description:typeof raw.equipment[i]?.description==="string"?raw.equipment[i].description:""}));
+const safeGoals = arr => Array.isArray(arr)
+  ? arr
+      .filter(g => g && typeof g.name === "string")
+      .map((g, i) => {
+        const max = clamp(g.max ?? 1, 1, 999999);
+
+        return {
+          id: typeof g.id === "string"
+            ? g.id
+            : `g-${Date.now()}-${i}`,
+          name: g.name,
+          max,
+          count: clamp(g.count ?? 0, 0, max),
+          ...(g.completedAt
+            ? { completedAt: String(g.completedAt) }
+            : {}),
+          ...(g.used === true ? { used: true } : {})
+        };
+      })
+  : [];
+ out.goals=safeGoals(raw.goals);out.completedGoals=safeGoals(raw.completedGoals);
+ out.spentLog=Array.isArray(raw.spentLog)
+ ? raw.spentLog
+    .filter(e=>e&&Array.isArray(e.names))
+    .map(e=>({
+      date:typeof e.date==="string"?e.date:"",
+      names:e.names.filter(n=>typeof n==="string"),
+      gritBefore:clamp(e.gritBefore??0,0,14),
+      gritAfter:clamp(e.gritAfter??0,0,14)
+    }))
+ : [];
+ out.story={...d.story};if(raw.story&&typeof raw.story==="object")STORY.forEach(([k])=>out.story[k]=typeof raw.story[k]==="string"?raw.story[k]:"");
+ out.echo=typeof raw.echo==="string"?raw.echo:"";
+ out.notes=Array.isArray(raw.notes)?raw.notes.filter(n=>n&&typeof n==="object").map((n,i)=>({id:typeof n.id==="string"&&n.id?n.id:"note-"+Date.now()+"-"+i,title:typeof n.title==="string"?n.title:"Névtelen jegyzet",content:typeof n.content==="string"?n.content:""})):[];
+ out.activeNoteId=typeof raw.activeNoteId==="string"&&out.notes.some(n=>n.id===raw.activeNoteId)?raw.activeNoteId:(out.notes[0]?.id||"");
+ out.version=1;return out;
+}
+function downloadJSON(){
+ readFromUI();const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json;charset=utf-8"});const url=URL.createObjectURL(blob);
+ const safe=(state.name||"Zombie_Road_karakter").trim().replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g,"_").slice(0,70)||"Zombie_Road_karakter";
+ const a=document.createElement("a");a.href=url;a.download=safe+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $("saveStatus").textContent="JSON-fájl letöltve";$("saveStatus").className="pill good";toast("Karaktermentés letöltve.");
+lastSaveTime = Date.now();
+updateSaveTimer();
+scheduleSaveReminder();
+}
+function askConfirm(title,msg){$("confirmTitle").textContent=title;$("confirmText").textContent=msg;$("confirmDialog").showModal();return new Promise(resolve=>{confirmResolver=resolve})}
+$("confirmOk").addEventListener("click",()=>{$("confirmDialog").close();if(confirmResolver)confirmResolver(true);confirmResolver=null});
+$("confirmCancel").addEventListener("click",()=>{$("confirmDialog").close();if(confirmResolver)confirmResolver(false);confirmResolver=null});
+$("newBtn").addEventListener("click",async()=>{readFromUI();const ok=await askConfirm("Új karakter","A jelenlegi, még le nem mentett módosítások elvesznek. Előbb mentsd le a karaktert, ha meg akarod tartani. Új karaktert nyissak?");if(ok){state=defaults();selectedCompletedGoals.clear();renderAll();$("saveStatus").textContent="Új karakter";$("saveStatus").className="pill warn";markDirty()}});
+$("saveBtn").addEventListener("click",downloadJSON);
+
+// Automatikus böngészős mentés és opcionális fájlba írás.
+const LOCAL_AUTOSAVE_KEY = "zombieRoad.character.autosave.v1";
+const LOCAL_AUTOSAVE_DELAY = 350;
+const AUTO_FILE_SAVE_DELAY = 700;
+let localAutosaveTimer = null;
+let localAutosavePending = false;
+let localAutosaveAvailable = true;
+let autoFileSaveTimer = null;
+let autoFileSaveHandle = null;
+let autoFileWriteChain = Promise.resolve();
+
+function snapshotJSON() {
+  readFromUI();
+  return JSON.stringify(state, null, 2);
+}
+
+function scheduleLocalAutosave() {
+  localAutosavePending = true;
+  clearTimeout(localAutosaveTimer);
+  localAutosaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(LOCAL_AUTOSAVE_KEY, snapshotJSON());
+      localAutosavePending = false;
+      $("autoFileStatus").textContent = autoFileSaveHandle
+        ? "Böngészős automentés: aktív · A kiválasztott JSON-fájl automatikusan frissül."
+        : "Böngészős automentés: aktív · Automatikus fájlmentés: kikapcsolva.";
+      if ($("saveStatus").classList.contains("warn")) {
+        $("saveStatus").textContent = "Automatikusan mentve a böngészőbe";
+        $("saveStatus").className = "pill good";
+      }
+    } catch (err) {
+      localAutosaveAvailable = false;
+      $("autoFileStatus").textContent =
+        "A böngészős automentés nem sikerült: " + err.message;
+      $("saveStatus").textContent = "Automentési hiba";
+      $("saveStatus").className = "pill warn";
+    }
+  }, LOCAL_AUTOSAVE_DELAY);
+}
+
+function scheduleAutoFileSave() {
+  if (!autoFileSaveHandle) return;
+  clearTimeout(autoFileSaveTimer);
+  autoFileSaveTimer = setTimeout(() => {
+    autoFileWriteChain = autoFileWriteChain
+      .then(async () => {
+        if (!autoFileSaveHandle) return;
+        const writable = await autoFileSaveHandle.createWritable();
+        await writable.write(snapshotJSON());
+        await writable.close();
+        $("autoFileStatus").textContent =
+          "Böngészős automentés: aktív · Automatikus fájlmentés: sikeres.";
+        lastSaveTime = Date.now();
+        updateSaveTimer();
+      })
+      .catch(err => {
+        $("autoFileStatus").textContent =
+          "Az automatikus fájlmentés hibát jelzett: " + err.message +
+          " · A böngészős mentés továbbra is működik.";
+      });
+  }, AUTO_FILE_SAVE_DELAY);
+}
+
+async function enableAutoFileSave() {
+  if (!("showSaveFilePicker" in window)) {
+    toast("Ez a böngésző nem támogatja a közvetlen automatikus fájlmentést. A böngészős automentés ettől még működik.");
+    $("autoFileStatus").textContent =
+      "Böngészős automentés: aktív · Ez a böngésző nem támogatja a közvetlen fájlmentést.";
+    return;
+  }
+
+  try {
+    const safe = (state.name || "Zombie_Road_karakter")
+      .trim().replace(/[\\\\/:*?"<>|]+/g, "_").replace(/\s+/g, "_")
+      .slice(0, 70) || "Zombie_Road_karakter";
+    autoFileSaveHandle = await window.showSaveFilePicker({
+      suggestedName: safe + ".json",
+      types: [{
+        description: "Zombie Road karaktermentés",
+        accept: { "application/json": [".json"] }
+      }]
+    });
+
+    const writable = await autoFileSaveHandle.createWritable();
+    await writable.write(snapshotJSON());
+    await writable.close();
+
+    $("autoFileSaveBtn").textContent = "◎ Automatikus fájlmentés: bekapcsolva";
+    $("autoFileStatus").textContent =
+      "Böngészős automentés: aktív · A kiválasztott JSON-fájl automatikusan frissül. Új oldalmegnyitáskor a fájlt újra ki kell választani.";
+    lastSaveTime = Date.now();
+    updateSaveTimer();
+    toast("Automatikus fájlmentés bekapcsolva.");
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      $("autoFileStatus").textContent =
+        "Nem sikerült bekapcsolni a fájlmentést: " + err.message;
+      toast("Nem sikerült bekapcsolni az automatikus fájlmentést.");
+    }
+  }
+}
+
+$("autoFileSaveBtn").addEventListener("click", enableAutoFileSave);
+
+function restoreLocalAutosave() {
+  try {
+    const raw = localStorage.getItem(LOCAL_AUTOSAVE_KEY);
+    if (!raw) return false;
+    state = normalize(JSON.parse(raw));
+    return true;
+  } catch (err) {
+    localAutosaveAvailable = false;
+    $("autoFileStatus").textContent =
+      "A böngészős tárhely nem érhető el: " + err.message;
+    return false;
+  }
+}
+
+const SAVE_REMINDER_INTERVAL = 15 * 60 * 1000;
+let saveReminderTimer = null;
+
+function scheduleSaveReminder() {
+  clearTimeout(saveReminderTimer);
+
+  saveReminderTimer = setTimeout(() => {
+    $("saveReminder").classList.remove("hidden");
+  }, SAVE_REMINDER_INTERVAL);
+}
+
+$("reminderSaveBtn").addEventListener("click", () => {
+  $("saveReminder").classList.add("hidden");
+  downloadJSON();
+  scheduleSaveReminder();
+});
+
+$("reminderLaterBtn").addEventListener("click", () => {
+  $("saveReminder").classList.add("hidden");
+  scheduleSaveReminder();
+});
+
+scheduleSaveReminder();
+
+let lastSaveTime = Date.now();
+
+function updateSaveTimer() {
+  const elapsed = Math.floor((Date.now() - lastSaveTime) / 1000);
+
+  const hours = String(Math.floor(elapsed / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, "0");
+  const seconds = String(elapsed % 60).padStart(2, "0");
+
+  $("saveElapsed").textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+setInterval(updateSaveTimer, 1000);
+
+$("choosePortraitBtn").addEventListener("click",()=>$("portraitInput").click());
+$("removePortraitBtn").addEventListener("click",()=>{
+ if(!state.imageData)return;
+ state.imageData="";renderPortrait();markDirty();toast("Karakterportré eltávolítva.");
+});
+$("portraitInput").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ if(!file.type.startsWith("image/")){alert("Kérlek, képfájlt válassz.");e.target.value="";return;}
+ try{
+  const dataUrl=await new Promise((resolve,reject)=>{
+   const reader=new FileReader();reader.onerror=()=>reject(new Error("A kép nem olvasható be."));reader.onload=()=>resolve(reader.result);reader.readAsDataURL(file);
+  });
+  const image=await new Promise((resolve,reject)=>{
+   const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error("A kiválasztott fájl nem érvényes kép."));img.src=dataUrl;
+  });
+  const maxSide=1400,scale=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight));
+  const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+  const ctx=canvas.getContext("2d");if(!ctx)throw new Error("A kép feldolgozása nem sikerült.");
+  ctx.drawImage(image,0,0,canvas.width,canvas.height);
+  let compressed=canvas.toDataURL("image/webp",0.84);
+  if(!compressed.startsWith("data:image/webp"))compressed=dataUrl;
+  state.imageData=compressed;renderPortrait();markDirty();toast("Karakterportré hozzáadva; a következő JSON-mentés tartalmazza a képet.");
+ }catch(err){alert("Nem sikerült betölteni a képet.\n\n"+err.message);}
+ finally{e.target.value="";}
+});
+$("loadBtn").addEventListener("click",()=> $("fileInput").click());
+$("fileInput").addEventListener("change",async e=>{const file=e.target.files?.[0];if(!file)return;try{const raw=JSON.parse(await file.text());const next=normalize(raw);const ok=await askConfirm("Karakter betöltése",`Betöltöd ezt a mentést: ${file.name}? A jelenlegi, még le nem mentett adatok felülíródnak.`);if(ok){state=next;selectedCompletedGoals.clear();savedName=file.name;renderAll();$("saveStatus").textContent="Betöltve: "+file.name;$("saveStatus").className="pill good";scheduleLocalAutosave();scheduleAutoFileSave();toast("Karakter betöltve.")}}catch(err){alert("Nem sikerült betölteni a fájlt. Ellenőrizd, hogy érvényes Zombie Road JSON-mentés-e.\n\n"+err.message)}finally{e.target.value=""}});
+$("newRoundBtn").addEventListener("click",()=>{state.currentAp=state.ap;renderNumbers();renderActions();markDirty();toast("Új kör: az aktuális AP visszaállt "+state.ap+"-re.")});
+$("redeemGoalsBtn").addEventListener("click",redeemSelectedGoals);
+$("addGoalBtn").addEventListener("click",()=>{$("goalName").value="";$("goalMax").value="1";$("goalDialog").showModal();$("goalName").focus()});
+$("cancelGoalBtn").addEventListener("click",()=>$("goalDialog").close());
+$("goalForm").addEventListener("submit",e=>{e.preventDefault();const name=$("goalName").value.trim(),max=clamp($("goalMax").value,1,999999);if(!name)return;state.goals.push({id:crypto.randomUUID?crypto.randomUUID():"g-"+Date.now()+"-"+Math.random().toString(36).slice(2),name,max,count:0});$("goalDialog").close();renderGoals();markDirty();toast("Új strigula létrehozva.")});
+$("newNoteBtn").addEventListener("click",createNote);
+$("noteSearch").addEventListener("input",renderNotes);
+$("noteTitle").addEventListener("input",()=>{const note=activeNote();if(!note)return;note.title=$("noteTitle").value;renderNotesListOnly();markDirty()});
+$("noteContent").addEventListener("input",()=>{const note=activeNote();if(!note)return;note.content=$("noteContent").value;markDirty()});
+function renderNotesListOnly(){
+ const host=$("notesList"),query=$("noteSearch").value.trim().toLocaleLowerCase("hu-HU");host.innerHTML="";
+ const filtered=state.notes.filter(n=>(n.title||"").toLocaleLowerCase("hu-HU").includes(query));
+ if(!filtered.length){const empty=document.createElement("div");empty.className="notes-empty";empty.textContent=state.notes.length?"Nincs ilyen nevű jegyzet.":"Még nincs jegyzeted.";host.appendChild(empty)}
+ filtered.forEach(note=>{const btn=document.createElement("button");btn.type="button";btn.className="note-choice"+(note.id===state.activeNoteId?" active":"");btn.textContent=note.title||"Névtelen jegyzet";btn.addEventListener("click",()=>selectNote(note.id));host.appendChild(btn)});
+ $("notesCount").textContent=state.notes.length+" jegyzet";
+}
+$("saveNoteBtn").addEventListener("click",saveActiveNote);
+$("deleteNoteBtn").addEventListener("click",deleteActiveNote);
+document.addEventListener("click",e=>{const btn=e.target.closest("[data-step]");if(btn){const k=btn.dataset.step;setNum(k,state[k]+Number(btn.dataset.delta));renderActions()}const b=e.target.closest("[data-bonus]");if(b){const k=b.dataset.bonus;state.bonuses[k]=clamp((state.bonuses[k]||0)+Number(b.dataset.delta),0,3);renderBonuses();markDirty()}});
+document.addEventListener("change",e=>{const el=e.target;if(el.matches("[data-number]")){const k=el.dataset.number;setNum(k,el.value);renderActions()}else if(el.matches("[data-bonus-value]")){state.bonuses[el.dataset.bonusValue]=clamp(el.value,0,3);renderBonuses();markDirty()}else if(el.matches("[data-gear-name]")){state.equipment[Number(el.dataset.gearName)].name=el.value;markDirty()}else if(el.matches("[data-gear-desc]")){state.equipment[Number(el.dataset.gearDesc)].description=el.value;markDirty()}});
+document.addEventListener("input",e=>{const el=e.target;if(el.matches("[data-bind]")){const key=el.dataset.bind;state[key]=el.value;markDirty()}else if(el.matches("[data-story]")){state.story[el.dataset.story]=el.value;markDirty()}else if(el.matches("[data-gear-name]")){state.equipment[Number(el.dataset.gearName)].name=el.value;markDirty()}else if(el.matches("[data-gear-desc]")){state.equipment[Number(el.dataset.gearDesc)].description=el.value;markDirty()}});
+window.addEventListener("beforeunload",e=>{
+  if(localAutosavePending){
+    e.preventDefault();
+    e.returnValue="";
+  }
+});
+const restoredAutosave = restoreLocalAutosave();
+setupDie();
+renderAll();
+if (restoredAutosave) {
+  $("saveStatus").textContent = "Böngészőből visszaállítva";
+  $("saveStatus").className = "pill good";
+  $("autoFileStatus").textContent =
+    "Korábbi karakter automatikusan visszaállítva a böngészőből · Automatikus fájlmentés: kikapcsolva.";
+} else if (localAutosaveAvailable) {
+  $("autoFileStatus").textContent =
+    "Böngészős automentés: aktív · Automatikus fájlmentés: kikapcsolva.";
+} else {
+  $("autoFileStatus").textContent =
+    "A böngészős automentés jelenleg nem érhető el ezen az oldalon.";
+}
+
+/* ===== Felső navigáció: ugrás + aktív szakasz követése ===== */
+(function(){
+  const nav=document.getElementById("topNav");if(!nav)return;
+  const root=document.documentElement;
+  const tabsBox=nav.querySelector(".nav-tabs");
+  const tabs=[...nav.querySelectorAll(".nav-tab")];
+  const targets=tabs.map(t=>document.getElementById(t.dataset.target));
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function setH(){root.style.setProperty("--nav-h",nav.offsetHeight+"px")}
+  setH();window.addEventListener("resize",setH);
+  if("ResizeObserver" in window)new ResizeObserver(setH).observe(nav);
+  let current=-1,ticking=false;
+  function update(){
+    ticking=false;
+    const line=nav.offsetHeight+24;let idx=0;
+    targets.forEach((el,i)=>{if(el&&el.getBoundingClientRect().top<=line)idx=i});
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4)idx=targets.length-1;
+    if(idx===current)return;current=idx;
+    tabs.forEach((t,i)=>{t.classList.toggle("active",i===idx);if(i===idx)t.setAttribute("aria-current","true");else t.removeAttribute("aria-current")});
+    const t=tabs[idx];
+    tabsBox.scrollTo({left:t.offsetLeft-(tabsBox.clientWidth-t.offsetWidth)/2,behavior:reduce?"auto":"smooth"});
+  }
+  function onScroll(){if(!ticking){ticking=true;requestAnimationFrame(update)}}
+  window.addEventListener("scroll",onScroll,{passive:true});
+  window.addEventListener("resize",onScroll);
+  tabs.forEach((t,i)=>t.addEventListener("click",()=>{
+    const el=targets[i];if(el)el.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"});
+  }));
+  update();
+})();
+</script>
+</body>
+</html>

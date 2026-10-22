@@ -1,0 +1,2000 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#211d1a" />
+    <title>Zombie Road — Mesélői segéd</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #191715;
+        --panel: #24211e;
+        --panel2: #302a25;
+        --paper: #393128;
+        --border: #55463a;
+        --text: #c4b6a3;
+        --muted: #928477;
+        --rust: #a4523b;
+        --rust2: #713b2d;
+        --green: #788064;
+        --yellow: #a58a57;
+        --red: #a34b42;
+        --input: #211e1b;
+        --shadow: #100e0d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          14px/1.5 "Segoe UI",
+          Arial,
+          sans-serif;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        color: var(--text);
+        background: var(--panel2);
+        border: 1px solid var(--border);
+        padding: 7px 10px;
+        border-radius: 3px;
+      }
+
+      button:hover {
+        background: #44372d;
+        border-color: var(--rust);
+      }
+
+      button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        background: var(--input);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        padding: 8px;
+        min-width: 0;
+      }
+
+      input[type="checkbox"] {
+        width: auto;
+        accent-color: var(--rust);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 65px;
+      }
+
+      label {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-weight: 600;
+        line-height: 1.25;
+        color: #b8a58e;
+        margin: 0 0 10px;
+      }
+
+      h1 {
+        font-size: 22px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+
+      h3 {
+        font-size: 15px;
+      }
+
+      h4 {
+        font-size: 13px;
+      }
+
+      p {
+        margin: 5px 0 10px;
+      }
+
+      small,
+      .muted {
+        color: var(--muted);
+      }
+
+      header {
+        background: #211d1a;
+        border-bottom: 2px solid var(--rust2);
+        padding: 16px clamp(12px, 3vw, 30px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .brand small {
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .brand h1 {
+        margin: 0;
+      }
+
+      .topstats {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        color: var(--muted);
+      }
+
+      nav {
+        display: flex;
+        gap: 5px;
+        padding: 9px clamp(8px, 3vw, 30px);
+        background: #211d1a;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--border);
+      }
+
+      nav button {
+        white-space: nowrap;
+        border-color: transparent;
+        background: transparent;
+      }
+
+      nav button.active {
+        background: var(--rust2);
+        border-color: var(--rust);
+      }
+
+      main {
+        padding: 18px clamp(10px, 3vw, 30px);
+        max-width: 1600px;
+        margin: auto;
+      }
+
+      .view {
+        display: none;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      .row {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+        gap: 12px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+        gap: 14px;
+      }
+
+      @media (max-width: 850px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 13px;
+        box-shadow: 0 3px 9px var(--shadow);
+        margin-bottom: 10px;
+      }
+
+      .card {
+        background: #211e1b;
+        border: 1px solid #4b3e32;
+        border-left: 3px solid #66503e;
+        padding: 11px;
+        margin-top: 8px;
+        border-radius: 3px;
+      }
+
+      .card.dead {
+        border-left-color: var(--red);
+        opacity: 0.78;
+      }
+
+      .card.inactive {
+        border-left-color: #77705e;
+        opacity: 0.8;
+      }
+
+      .card.current {
+        border-color: var(--rust);
+        box-shadow: 0 0 0 1px var(--rust2);
+      }
+
+      .section-title {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+      }
+
+      .fieldgrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 9px;
+        margin: 10px 0;
+      }
+
+      .field {
+        min-width: 0;
+      }
+
+      .btn-rust {
+        background: var(--rust2);
+        border-color: var(--rust);
+      }
+
+      .btn-danger {
+        border-color: #83463b;
+        color: #c28a7c;
+      }
+
+      .btn-small {
+        padding: 3px 7px;
+        font-size: 12px;
+      }
+
+      .tag {
+        display: inline-block;
+        background: #40362c;
+        border: 1px solid #5c4938;
+        color: #b6a28a;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin: 2px;
+      }
+
+      .hpbar {
+        height: 5px;
+        background: #45372f;
+        margin: 7px 0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .hpbar span {
+        display: block;
+        height: 100%;
+        background: var(--rust);
+      }
+
+      .statline {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-top: 9px;
+      }
+
+      .actions button {
+        font-size: 12px;
+        padding: 5px 7px;
+      }
+
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .turn {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        background: #211e1b;
+        border: 1px solid var(--border);
+        padding: 8px;
+      }
+
+      .turn.done {
+        opacity: 0.55;
+      }
+
+      .turn.active-turn {
+        border-color: var(--rust);
+        background: #342820;
+      }
+
+      .turn-number {
+        font-weight: bold;
+        color: var(--yellow);
+      }
+
+      .turn input[type="number"] {
+        max-width: 55px;
+      }
+
+      .log {
+        max-height: 430px;
+        overflow: auto;
+      }
+
+      .logentry {
+        border-bottom: 1px solid #40372e;
+        padding: 7px 0;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .logentry time {
+        color: var(--muted);
+        margin-right: 7px;
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 12px 0;
+      }
+
+      .empty {
+        color: var(--muted);
+        padding: 16px;
+        text-align: center;
+        border: 1px dashed var(--border);
+      }
+
+      .notice {
+        border-left: 3px solid var(--yellow);
+        padding: 8px 10px;
+        background: #2c2721;
+        color: #b5a48e;
+        font-size: 12px;
+        margin: 8px 0;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      footer {
+        text-align: center;
+        padding: 24px;
+        color: #71665b;
+        font-size: 11px;
+      }
+
+      #toast {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        background: #3b3026;
+        border: 1px solid var(--rust);
+        padding: 12px 16px;
+        max-width: 85vw;
+        z-index: 20;
+        display: none;
+      }
+
+      details {
+        margin-top: 9px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: #b8a58e;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      td,
+      th {
+        text-align: left;
+        padding: 6px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .inline-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .inline-label label {
+        margin: 0;
+      }
+
+      .last-roll {
+    display: inline-block;
+    background: #40362c;
+    border: 1px solid #a4523b;
+    color: #d5b99a;
+    padding: 7px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 2px;
+}
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="brand">
+        <small>Mesélői segédprogram</small>
+        <h1>Zombie Road</h1>
+      </div>
+      <div class="topstats">
+        <span>Harcok: <b id="statFights">0</b></span
+        ><span>Szörnytípusok: <b id="statTemplates">0</b></span
+        ><span id="saveState">Helyi mentés</span>
+      </div>
+    </header>
+    <nav id="nav">
+      <button class="active" data-view="combat">Harcvezérlő</button
+      ><button data-view="monsters">Szörny-adatbázis</button
+      ><button data-view="loot">Zsákmány</button
+      ><button data-view="history">Harcnapló</button
+      ><button data-view="settings">Adatkezelés</button>
+    </nav>
+    <main>
+      <section class="view active" id="view-combat">
+        <div class="between section-title">
+          <div>
+            <h2>Harcvezérlő</h2>
+            <small>Résztvevők, kezdeményezés, AP és állapotok</small>
+          </div>
+          <button class="btn-rust" onclick="newFight()">+ Új harc</button>
+        </div>
+        <div class="layout">
+          <div>
+            <div class="panel">
+              <h3>Harc kiválasztása</h3>
+              <div class="fieldgrid">
+                <div>
+                  <label>Harc</label
+                  ><select id="fightSelect"></select>
+                </div>
+                <div>
+                  <label>Állapot</label
+                  ><select
+                    id="fightStatus"
+                    onchange="setFightStatus(this.value)"
+                  >
+                    <option value="active">Aktív</option>
+                    <option value="paused">Szüneteltetett</option>
+                    <option value="closed">Lezárt</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Kör</label><input id="roundDisplay" readonly />
+                </div>
+              </div>
+              <div class="row">
+                <button onclick="renameFight()">Átnevezés</button
+                ><button class="btn-rust" onclick="nextRound()">
+                  Következő kör</button
+                ><button onclick="rollGroup()">Aktív szörnyek dobása</button>
+              </div>
+              <p class="muted">
+                A körváltás nem dob új kezdeményezést, és nem rendezi át a
+                sorrendet.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Előre felvett játékosok</h3>
+              <div class="fieldgrid">
+                <div>
+                  <label>Új játékos neve</label
+                  ><input id="rosterName" placeholder="Játékos neve" />
+                </div>
+                <div style="align-self: end">
+                  <button class="btn-rust" onclick="addRosterPlayer()">
+                    Név mentése
+                  </button>
+                </div>
+              </div>
+              <div id="rosterList" class="list"></div>
+              <small
+                >A játékos neve mellett add meg a kezdeményezését, majd nyomd
+                meg a Hozzáadás gombot. Harconként csak egyszer kell
+                felvenni.</small
+              >
+            </div>
+            <div class="panel">
+              <h3>Szörnycsoport hozzáadása</h3>
+              <div class="fieldgrid">
+                <div>
+                  <label>Csoport neve</label
+                  ><input id="groupName" placeholder="Útmenti zombik" />
+                </div>
+                <div>
+                  <label>Szörnytípus</label
+                  ><select id="templateSelect"></select>
+                </div>
+                <div>
+                  <label>Darabszám</label
+                  ><input
+                    id="groupCount"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value="1"
+                  />
+                </div>
+              </div>
+              <button class="btn-rust" onclick="addMonsterGroup()">
+                Csoport hozzáadása
+              </button>
+              <p class="muted">
+                A csoport csak címke: minden egyes szörny külön kezdeményezést,
+                HP-t, AP-t és képességállapotot kap.
+              </p>
+            </div>
+            <div class="panel">
+              <div class="between section-title">
+                <h3>Kezdeményezési sorrend</h3>
+                <button class="btn-rust" onclick="rollInitiative()">
+                  Harc eleji kezdeményezés
+                </button>
+              </div>
+              <p class="muted">
+                A harc elején minden szörny külön d6-ot dob. A játékosok dobását
+                kézzel add meg. A sorrend a dobások alapján rendeződik; a fel/le
+                gombokkal később bármikor kézzel módosítható.
+              </p>
+              <div id="initiativeList" class="list"></div>
+            </div>
+          </div>
+          <div>
+            <div class="panel">
+              <div class="between section-title">
+                <h3>Résztvevők</h3>
+                <small id="monsterCount"></small>
+              </div>
+              <div id="combatants"></div>
+            </div>
+            <div class="panel">
+              <div class="between section-title">
+                <h3>Harc eseményei</h3>
+                <button onclick="clearVisibleLog()">Napló ürítése</button>
+              </div>
+              <div id="combatLog" class="log"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="view" id="view-monsters">
+        <div class="between section-title">
+          <div>
+            <h2>Szörny-adatbázis</h2>
+            <small>Alapértékek és egyedi képességek</small>
+          </div>
+          <button class="btn-rust" onclick="newTemplate()">
+            + Szörnytípus
+          </button>
+        </div>
+        <div class="layout">
+          <div class="panel">
+            <h3>Szörnytípusok</h3>
+            <div id="templateList"></div>
+          </div>
+          <div class="panel">
+            <h3>Szörnytípus szerkesztése</h3>
+            <div id="templateEditor"></div>
+          </div>
+        </div>
+      </section>
+      <section class="view" id="view-loot">
+        <div class="section-title">
+          <h2>Zsákmánykezelés</h2>
+          <small
+            >A zsákmány harc után is megmarad; a mennyiség részlegesen
+            kiosztható.</small
+          >
+        </div>
+        <div class="panel">
+          <div class="fieldgrid">
+            <div>
+              <label>Harc</label
+              ><select id="lootFight"></select>
+            </div>
+            <div>
+              <label>Megnevezés</label
+              ><input id="lootName" placeholder="Lőszer, élelem, felszerelés" />
+            </div>
+            <div>
+              <label>Mennyiség</label
+              ><input
+                id="lootQty"
+                type="number"
+                min="0.01"
+                step="any"
+                value="1"
+              />
+            </div>
+            <div>
+              <label>Hozzárendelés</label
+              ><select id="lootOwner">
+                <option value="fight">Teljes harc</option>
+              </select>
+            </div>
+            <div>
+              <label>Állapot</label
+              ><select id="lootStatus">
+                <option value="undecided">Eldöntetlen</option>
+                <option value="taken">Felvéve</option>
+                <option value="left">Hátrahagyva</option>
+              </select>
+            </div>
+          </div>
+          <label>Megjegyzés</label
+          ><textarea
+            id="lootNotes"
+            placeholder="Helyszín, körülmények, megosztás..."
+          ></textarea
+          ><button class="btn-rust" onclick="addLoot()">
+            Zsákmány rögzítése
+          </button>
+        </div>
+        <div class="panel">
+          <h3>Nyilvántartás</h3>
+          <div id="lootList"></div>
+        </div>
+      </section>
+      <section class="view" id="view-history">
+        <div class="between section-title">
+          <div>
+            <h2>Harcnapló és előzmények</h2>
+            <small>A lezárt és szüneteltetett harcok is megmaradnak.</small>
+          </div>
+          <button onclick="renderHistory()">Frissítés</button>
+        </div>
+        <div id="historyList"></div>
+      </section>
+      <section class="view" id="view-settings">
+        <h2 class="section-title">Adatkezelés</h2>
+        <div class="grid">
+          <div class="panel">
+            <h3>JSON export</h3>
+            <p>Minden harc, szörnytípus, zsákmány és naplóbejegyzés mentése.</p>
+            <button class="btn-rust" onclick="exportData()">
+              Teljes mentés letöltése
+            </button>
+          </div>
+          <div class="panel">
+            <h3>JSON import</h3>
+            <p>A betöltés a jelenlegi adatokat felülírja.</p>
+            <input
+              id="importFile"
+              type="file"
+              accept=".json,application/json"
+            /><button class="btn-danger" onclick="importData()">
+              Mentés betöltése
+            </button>
+          </div>
+          <div class="panel">
+            <h3>Helyi mentés</h3>
+            <p>Az alkalmazás automatikusan ment a böngésző helyi tárhelyére.</p>
+            <div class="notice">
+              Rendszeresen készíts JSON-biztonsági mentést. A böngészőadatok
+              törlése eltávolíthatja a helyi mentést.
+            </div>
+            <button onclick="exportData()">Biztonsági mentés</button>
+          </div>
+          <div class="panel">
+            <h3>Teljes törlés</h3>
+            <p>Eltávolítja az összes alkalmazásadatot.</p>
+            <button class="btn-danger" onclick="resetAll()">
+              Minden adat törlése
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      ZOMBIE ROAD • HELYI MESÉLŐI SEGÉD • A PRÓBÁKAT ÉS SEBZÉST A MESÉLŐ KEZELI
+    </footer>
+    <div id="toast" role="status"></div>
+    <script>
+      "use strict";
+      const STORAGE_KEY = "zombieRoadGM_v2";
+      const BASE_ACTIONS = [
+        {
+          name: "Mozgás",
+          ap: 1,
+          desc: "Egy mozgással egy távolságegységnyi mozgás.",
+        },
+        {
+          name: "Támadás",
+          ap: 1,
+          desc: "A karakter megtámad valakit. Sikeres próbát igényel.",
+        },
+        {
+          name: "Újratöltés",
+          ap: 1,
+          desc: "Puskába 1, automata fegyverbe 6 golyó kerül egy töltéssel.",
+        },
+        {
+          name: "Célzás",
+          ap: 1,
+          desc: "Lőtávon kívül automata fegyverrel nem lehet célozva lőni; puska és nem halálos fegyver használható. Lőtávon belül vagy közelharcban +1 a támadáspróbához, vagy +1 sebzés egy célpontra.",
+        },
+        {
+          name: "Koordináció",
+          ap: 1,
+          desc: "Két közelharci támadó koordinálása. Mindkét támadó +1 pontot kap a támadáshoz.",
+        },
+        { name: "Körültekintés", ap: 1, desc: "Alaposan körülnézel." },
+        {
+          name: "Tárgycsere",
+          ap: 1,
+          desc: "A kézben tartott tárgy elrakása és egy másik elővétele.",
+        },
+        {
+          name: "Rögtönzött védelem",
+          ap: 1,
+          desc: "Környezeti tárgyból ideiglenes védelem. +1 Páncél; a tárgy kézben van. AP-költség nélkül eldobható.",
+        },
+        {
+          name: "Szabad Cselekedet",
+          ap: 2,
+          desc: "Nem támadó vagy mozgó cselekedet, például tereptárgy használata.",
+        },
+        {
+          name: "Gyógyítás",
+          ap: 2,
+          desc: "Önmagad vagy más karakter gyógyítása; sikeres próbát igényel.",
+        },
+        {
+          name: "Stabilizálás",
+          ap: 2,
+          desc: "0 Kitartású karakter stabilizálása. Sikeres próba esetén 1 Kitartást kap.",
+        },
+        {
+          name: "Rejtőzés",
+          ap: 2,
+          desc: "Elbújás vagy valami elrejtése. Rejtőzésből +1 támadás; rejtőzés alatt nem vagy támadható. Támadás után újra támadható leszel.",
+        },
+        {
+          name: "Összecsapott-barkácsolás",
+          ap: 3,
+          desc: "Sürgősen szükséges tárgy elkészítése a rendelkezésre álló anyagokból.",
+        },
+        {
+          name: "Hőstett",
+          ap: 3,
+          desc: "Legfeljebb 3 Kitartású ellenfél azonnali legyőzése vagy megölése támadás nélkül; a Próba vagy Párbaj dobáshoz +1 adható.",
+        },
+      ];
+      const uid = (p) =>
+        p +
+        "_" +
+        Date.now().toString(36) +
+        "_" +
+        Math.random().toString(36).slice(2, 8);
+      const esc = (s) =>
+        String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const num = (v, d = 0) =>
+        Number.isFinite(Number(v)) && v !== "" ? Number(v) : d;
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const stamp = () => new Date().toISOString();
+      const clone = (v) => JSON.parse(JSON.stringify(v));
+      function defaultState() {
+        const t = {
+          id: uid("template"),
+          name: "Útmenti zombi",
+          hp: 8,
+          armor: 1,
+          ap: 2,
+          strength: 0,
+          intellect: -1,
+          damage: 2,
+          notes: "",
+          abilities: [
+            {
+              id: uid("ability"),
+              name: "Harapás",
+              ap: 1,
+              desc: "Egyedi közelharci támadás.",
+              perRound: false,
+            },
+          ],
+        };
+        return {
+          version: 3,
+          templates: [t],
+          fights: [],
+          loot: [],
+          players: [],
+          selectedFight: null,
+          selectedTemplate: t.id,
+        };
+      }
+      function normaliseState(s) {
+        if (
+          !s ||
+          !Array.isArray(s.templates) ||
+          !Array.isArray(s.fights) ||
+          !Array.isArray(s.loot)
+        )
+          throw Error("Hiányzó vagy hibás adatmezők.");
+        s.players = Array.isArray(s.players) ? s.players : [];
+        s.templates.forEach((t) => {
+          t.abilities = Array.isArray(t.abilities) ? t.abilities : [];
+          t.abilities.forEach((a) => {
+            a.perRound = !!a.perRound;
+          });
+        });
+        s.fights.forEach((f) => {
+          if (!Array.isArray(f.combatants) || !Array.isArray(f.log))
+            throw Error("Hibás harcadat.");
+          f.combatants.forEach((c) => {
+            c.abilities = Array.isArray(c.abilities) ? c.abilities : [];
+            c.abilities.forEach((a) => {
+              a.perRound = !!a.perRound;
+            });
+            c.abilityState = c.abilityState || {};
+            if (c.kind === "monster") {
+              c.maxHp = Number.isFinite(c.maxHp) ? c.maxHp : c.hp || 1;
+              c.hp = Number.isFinite(c.hp) ? c.hp : c.maxHp;
+              c.baseAP = Number.isFinite(c.baseAP) ? c.baseAP : 2;
+              c.ap = Number.isFinite(c.ap) ? c.ap : c.baseAP;
+              c.temporaryArmor = c.temporaryArmor || 0;
+            }
+          });
+          f.round = f.round || 1;
+          f.status = f.status || "active";
+          f.initiativeOrder = Array.isArray(f.initiativeOrder)
+            ? f.initiativeOrder
+            : f.combatants.map((c) => c.id);
+        });
+        return s;
+      }
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return normaliseState(JSON.parse(raw));
+        } catch (e) {
+          console.warn("A helyi mentés nem olvasható:", e);
+        }
+        return defaultState();
+      }
+      let state = loadState();
+      let toastTimer = null;
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          $("saveState").textContent =
+            "Mentve · " +
+            new Date().toLocaleTimeString("hu-HU", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+        } catch (e) {
+          $("saveState").textContent = "Mentési hiba";
+          console.error(e);
+        }
+        updateStats();
+      }
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function toast(msg) {
+        const el = $("toast");
+        el.textContent = msg;
+        el.style.display = "block";
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => (el.style.display = "none"), 2600);
+      }
+      function log(f, msg, type = "event") {
+        if (!f) return;
+        f.log = f.log || [];
+        f.log.unshift({
+          id: uid("log"),
+          time: stamp(),
+          round: f.round || 1,
+          msg,
+          type,
+        });
+        save();
+      }
+      function currentFight() {
+        return (
+          state.fights.find((f) => f.id === state.selectedFight) ||
+          state.fights.find((f) => f.status === "active") ||
+          state.fights[0] ||
+          null
+        );
+      }
+      function findFight(id) {
+        return state.fights.find((f) => f.id === id);
+      }
+      function findCombatant(f, id) {
+        return f?.combatants.find((c) => c.id === id);
+      }
+      function findTemplate(id) {
+        return state.templates.find((t) => t.id === id);
+      }
+      function statusLabel(s) {
+        return (
+          {
+            active: "aktív",
+            inactive: "inaktív",
+            dead: "halott",
+            removed: "eltávolítva",
+          }[s] || s
+        );
+      }
+      function updateStats() {
+        $("statFights").textContent = state.fights.length;
+        $("statTemplates").textContent = state.templates.length;
+      }
+      function switchView(v) {
+        document
+          .querySelectorAll(".view")
+          .forEach((x) => x.classList.toggle("active", x.id === "view-" + v));
+        document
+          .querySelectorAll("nav button")
+          .forEach((x) => x.classList.toggle("active", x.dataset.view === v));
+        if (v === "combat") renderCombat();
+        if (v === "monsters") renderTemplates();
+        if (v === "loot") renderLoot();
+        if (v === "history") renderHistory();
+        if (v === "settings") updateStats();
+      }
+      $("nav").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-view]");
+        if (b) switchView(b.dataset.view);
+      });
+      function initPlayerFields() {
+        renderRoster();
+      }
+      function addRosterPlayer() {
+        const input = $("rosterName"),
+          name = input.value.trim();
+        if (!name) {
+          toast("Add meg a játékos nevét.");
+          return;
+        }
+        if (
+          state.players.some((p) => p.name.toLowerCase() === name.toLowerCase())
+        ) {
+          toast("Ez a név már szerepel a listában.");
+          return;
+        }
+        state.players.push({ id: uid("savedplayer"), name });
+        input.value = "";
+        save();
+        renderRoster();
+        toast("Játékos elmentve a névlistába.");
+      }
+      function deleteRosterPlayer(id) {
+        const p = state.players.find((x) => x.id === id);
+        if (!p) return;
+        if (
+          !confirm(
+            "Törlöd a névlistából: " +
+              p.name +
+              "? A korábbi harcokban szereplő karakterei megmaradnak.",
+          )
+        )
+          return;
+        state.players = state.players.filter((x) => x.id !== id);
+        save();
+        renderRoster();
+      }
+      function renderRoster() {
+        const el = $("rosterList");
+        if (!el) return;
+        const f = currentFight();
+        el.innerHTML =
+          state.players
+            .map((p) => {
+              const inFight = !!f?.combatants.some(
+                (c) =>
+                  c.kind === "player" &&
+                  (c.rosterId === p.id ||
+                    c.name.toLowerCase() === p.name.toLowerCase()),
+              );
+              return `<div class="row" style="padding:5px 0;border-bottom:1px solid var(--border)"><span style="flex:1;min-width:100px">${esc(p.name)}</span><label style="margin:0">Kezdeményezés</label><input id="rosterInit_${p.id}" type="number" min="1" max="6" placeholder="d6" style="width:68px" ${inFight ? "disabled" : ""}><button class="btn-small btn-rust" onclick="addRosterPlayerToFight('${p.id}')" ${inFight ? "disabled" : ""}>${inFight ? "Már a harcban" : "Hozzáadás"}</button><button class="btn-small btn-danger" onclick="deleteRosterPlayer('${p.id}')">Törlés</button></div>`;
+            })
+            .join("") ||
+          '<small class="muted">Még nincs elmentett játékosnév.</small>';
+      }
+      function addRosterPlayerToFight(pid) {
+        const f = currentFight();
+        if (!f) {
+          toast("Előbb hozz létre egy harcot.");
+          return;
+        }
+        const player = state.players.find((p) => p.id === pid);
+        if (!player) return;
+        if (
+          f.combatants.some(
+            (c) =>
+              c.kind === "player" &&
+              (c.rosterId === pid ||
+                c.name.toLowerCase() === player.name.toLowerCase()),
+          )
+        ) {
+          toast("Ez a játékos már szerepel ebben a harcban.");
+          return;
+        }
+        const field = $("rosterInit_" + pid),
+          raw = field?.value ?? "";
+        if (
+          raw !== "" &&
+          (!Number.isInteger(num(raw)) || num(raw) < 1 || num(raw) > 6)
+        ) {
+          toast("A kezdeményezés 1 és 6 közötti egész szám legyen.");
+          return;
+        }
+        const c = {
+          id: uid("player"),
+          rosterId: pid,
+          kind: "player",
+          name: player.name,
+          group: "Játékosok",
+          init: raw === "" ? null : num(raw),
+          initRolled: raw !== "",
+          acted: false,
+          status: "active",
+          hp: null,
+          ap: 0,
+          baseAP: 0,
+          armor: 0,
+          abilities: [],
+          abilityState: {},
+        };
+        f.combatants.push(c);
+        f.initiativeOrder.push(c.id);
+        log(f, "Játékos hozzáadva a harchoz: " + player.name);
+        sortInitiative(f);
+        renderAll();
+        toast(player.name + " hozzáadva a harchoz.");
+      }
+      function newFight() {
+        const name = prompt("A harc neve:", "Új harc");
+        if (name === null) return;
+        const f = {
+          id: uid("fight"),
+          name: name.trim() || "Névtelen harc",
+          status: "active",
+          round: 1,
+          created: stamp(),
+          combatants: [],
+          initiativeOrder: [],
+          initiativeDone: false,
+          log: [],
+        };
+        state.fights.unshift(f);
+        state.selectedFight = f.id;
+        log(f, "Harc létrehozva: " + f.name);
+        renderAll();
+        switchView("combat");
+      }
+      function setFightStatus(status) {
+        const f = currentFight();
+        if (!f) return;
+        f.status = status;
+        log(
+          f,
+          "Harc állapota: " +
+            ({ active: "aktív", paused: "szüneteltetett", closed: "lezárt" }[
+              status
+            ] || status),
+        );
+        save();
+        renderCombat();
+      }
+      function renameFight() {
+        const f = currentFight();
+        if (!f) return;
+        const n = prompt("Harc neve:", f.name);
+        if (n === null) return;
+        f.name = n.trim() || f.name;
+        log(f, "Harc átnevezve: " + f.name);
+        renderAll();
+      }
+      function addMonsterGroup() {
+        const f = currentFight();
+        if (!f) {
+          toast("Előbb hozz létre egy harcot.");
+          return;
+        }
+        const t = findTemplate($("templateSelect").value);
+        if (!t) {
+          toast("Válassz szörnytípust.");
+          return;
+        }
+        const count = clamp(Math.floor(num($("groupCount").value, 1)), 1, 100),
+          group = $("groupName").value.trim() || t.name;
+        let start = f.combatants.filter(
+          (c) => c.kind === "monster" && c.group === group,
+        ).length;
+        for (let i = 0; i < count; i++) {
+          const c = {
+            id: uid("monster"),
+            kind: "monster",
+            templateId: t.id,
+            name: group + " #" + ++start,
+            group,
+            init: null,
+            initRolled: false,
+            acted: false,
+            status: "active",
+            hp: t.hp,
+            maxHp: t.hp,
+            baseAP: t.ap,
+            ap: t.ap,
+            armor: t.armor,
+            strength: t.strength,
+            intellect: t.intellect,
+            damage: t.damage,
+            abilities: clone(t.abilities || []),
+            abilityState: {},
+            lastRoll: null,
+            notes: "",
+            temporaryArmor: 0,
+          };
+          f.combatants.push(c);
+          f.initiativeOrder.push(c.id);
+        }
+        log(f, count + " szörny hozzáadva: " + group + " (" + t.name + ").");
+        $("groupName").value = "";
+        sortInitiative(f);
+        renderAll();
+      }
+      function orderedCombatants(f) {
+        const map = new Map(f.combatants.map((c) => [c.id, c]));
+        const ids = (f.initiativeOrder || []).filter((id) => map.has(id));
+        f.combatants.forEach((c) => {
+          if (!ids.includes(c.id)) ids.push(c.id);
+        });
+        const ordered = ids
+          .map((id) => map.get(id))
+          .sort(
+            (a, b) =>
+              (a.status === "dead" ? 1 : 0) - (b.status === "dead" ? 1 : 0),
+          );
+        f.initiativeOrder = ordered.map((c) => c.id);
+        return ordered;
+      }
+      function sortInitiative(f) {
+        f.initiativeOrder = orderedCombatants(f).map((c) => c.id);
+        f.initiativeOrder.sort((a, b) => {
+          const ca = findCombatant(f, a),
+            cb = findCombatant(f, b);
+          const dead =
+            (ca.status === "dead" ? 1 : 0) - (cb.status === "dead" ? 1 : 0);
+          if (dead) return dead;
+          const ai = ca.init == null ? -1 : ca.init,
+            bi = cb.init == null ? -1 : cb.init;
+          return bi - ai;
+        });
+        save();
+      }
+      function rollInitiative() {
+        const f = currentFight();
+        if (!f) return;
+        if (f.initiativeDone) {
+          toast(
+            "A kezdeményezés már rögzítve van. Ha szükséges, az értékeket kézzel módosíthatod.",
+          );
+          return;
+        }
+        f.combatants
+          .filter((c) => c.kind === "monster" && c.status !== "removed")
+          .forEach((c) => {
+            c.init = Math.floor(Math.random() * 6) + 1;
+            c.initRolled = true;
+            log(f, c.name + " kezdeményezése: " + c.init, "initiative");
+          });
+        f.initiativeDone = true;
+        sortInitiative(f);
+        renderAll();
+        toast("A szörnyek külön kezdeményezése rögzítve.");
+      }
+      function moveInitiative(id, delta) {
+        const f = currentFight();
+        if (!f) return;
+        const ids = orderedCombatants(f).map((c) => c.id),
+          i = ids.indexOf(id),
+          j = i + delta;
+        if (i < 0 || j < 0 || j >= ids.length) return;
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+        f.initiativeOrder = ids;
+        log(f, "Kezdeményezési sorrend kézzel módosítva.");
+        renderCombat();
+      }
+      function setInitiative(id, value) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        if (
+          value !== "" &&
+          (!Number.isInteger(num(value)) || num(value) < 1 || num(value) > 6)
+        ) {
+          toast("A kezdeményezés 1–6 közötti egész szám lehet.");
+          renderCombat();
+          return;
+        }
+        c.init = value === "" ? null : num(value);
+        c.initRolled = value !== "";
+        log(
+          f,
+          c.name + " kezdeményezése módosítva: " + (c.init ?? "nincs megadva"),
+        );
+        sortInitiative(f);
+        renderCombat();
+      }
+      function markActed(id, checked) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!f || !c) return;
+        if (c.kind === "monster" && c.ap <= 0 && !checked) {
+          c.acted = true;
+          toast(
+            "A szörny AP-ja elfogyott, ezért cselekedettként marad jelölve.",
+          );
+          renderCombat();
+          return;
+        }
+        c.acted = checked;
+        log(
+          f,
+          c.name +
+            (checked
+              ? " cselekedett ebben a körben."
+              : " cselekedett jelölése visszavonva."),
+        );
+        renderCombat();
+      }
+      function nextRound() {
+        const f = currentFight();
+        if (!f) return;
+        if (f.status !== "active") {
+          toast("Csak aktív harcban lehet kört váltani.");
+          return;
+        }
+        f.round++;
+        f.combatants.forEach((c) => {
+          c.acted = false;
+          if (c.kind === "monster" && c.status === "active") {
+            c.ap = c.baseAP;
+            if (c.ap <= 0) c.acted = true;
+            c.abilities.forEach((a) => {
+              if (a.perRound) c.abilityState[a.id] = false;
+            });
+          }
+        });
+        log(
+          f,
+          "Kör " +
+            f.round +
+            " kezdete. Az aktív szörnyek AP-ja és körönkénti képességei visszaálltak.",
+        );
+        renderAll();
+      }
+      function rollMonster(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!f || !c) return;
+        const r = Math.floor(Math.random() * 6) + 1;
+        c.lastRoll = r;
+        log(f, c.name + " dobása: " + r, "roll");
+        renderCombat();
+        toast(c.name + ": " + r);
+      }
+      function rollGroup() {
+        const f = currentFight();
+        if (!f) return;
+        const list = f.combatants.filter(
+          (c) => c.kind === "monster" && c.status === "active",
+        );
+        if (!list.length) {
+          toast("Nincs aktív szörny.");
+          return;
+        }
+        list.forEach((c) => {
+          c.lastRoll = Math.floor(Math.random() * 6) + 1;
+          log(
+            f,
+            c.name + " külön dobása (csoportdobás): " + c.lastRoll,
+            "roll",
+          );
+        });
+        renderCombat();
+        toast(list.length + " külön d6-dobás rögzítve.");
+      }
+      function spendAP(id, ap, name, abilityId = null) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!f || !c) return;
+        if (c.kind !== "monster") {
+          toast("Az AP-kezelés ebben a segédben a szörnyekhez tartozik.");
+          return;
+        }
+        if (c.status !== "active") {
+          toast("Ez a szörny nem aktív.");
+          return;
+        }
+        if (c.ap < ap) {
+          toast("Nincs elég AP. Jelenlegi AP: " + c.ap);
+          return;
+        }
+        const ability = abilityId
+          ? c.abilities.find((a) => a.id === abilityId)
+          : null;
+        if (ability && ability.perRound && c.abilityState[abilityId]) {
+          toast("Ezt a képességet ebben a körben már használtad.");
+          return;
+        }
+        const detail = prompt(
+          name + " — megjegyzés (célpont, próba, eredmény; opcionális):",
+          "",
+        );
+        if (detail === null) return;
+        c.ap -= ap;
+        if (ability && ability.perRound) c.abilityState[abilityId] = true;
+        if (name === "Rögtönzött védelem" && !c.temporaryArmor)
+          c.temporaryArmor = 1;
+        if (c.ap <= 0) c.acted = true;
+        log(
+          f,
+          c.name +
+            " akciója: " +
+            name +
+            " (−" +
+            ap +
+            " AP)" +
+            (detail.trim() ? " — " + detail.trim() : ""),
+          "action",
+        );
+        if (c.acted && c.ap <= 0)
+          log(
+            f,
+            c.name + " AP-ja elfogyott, ezért cselekedettként lett jelölve.",
+          );
+        renderCombat();
+      }
+      function changeHP(id, delta) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!f || !c || c.kind !== "monster") return;
+        const old = c.hp;
+        c.hp = clamp(c.hp + delta, 0, c.maxHp);
+        if (c.hp === 0) {
+          c.status = "dead";
+          c.ap = 0;
+        } else if (c.status === "dead") c.status = "active";
+        log(
+          f,
+          c.name +
+            " Kitartás: " +
+            old +
+            " → " +
+            c.hp +
+            (delta > 0 ? " (gyógyítás)" : " (sebzés)"),
+          "hp",
+        );
+        renderCombat();
+      }
+      function editHP(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        const v = prompt("Kitartás (0–" + c.maxHp + "):", String(c.hp));
+        if (v === null) return;
+        const hp = num(v, -1);
+        if (!Number.isInteger(hp) || hp < 0 || hp > c.maxHp) {
+          toast("Érvénytelen Kitartás.");
+          return;
+        }
+        const old = c.hp;
+        c.hp = hp;
+        if (hp === 0) {
+          c.status = "dead";
+          c.ap = 0;
+        } else if (c.status === "dead") c.status = "active";
+        log(f, c.name + " Kitartás kézzel módosítva: " + old + " → " + hp);
+        renderCombat();
+      }
+      function instantKill(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c || !confirm("Azonnal halottnak jelölöd: " + c.name + "?"))
+          return;
+        c.hp = 0;
+        c.status = "dead";
+        c.ap = 0;
+        log(f, c.name + " azonnal megölve. Kitartás: 0.", "death");
+        renderCombat();
+      }
+      function changeStatus(id, status) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!f || !c) return;
+        c.status = status;
+        if (c.kind === "monster" && status === "dead") {
+          c.hp = 0;
+          c.ap = 0;
+        }
+        if (c.kind === "monster" && status === "active" && c.hp === 0) c.hp = 1;
+        log(f, c.name + " állapota: " + statusLabel(status));
+        f.initiativeOrder = orderedCombatants(f).map((x) => x.id);
+        renderCombat();
+      }
+      function removeCombatant(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c || !confirm("Eltávolítod a harcból? A bejegyzés megmarad."))
+          return;
+        c.status = "removed";
+        log(f, c.name + " eltávolítva a harcból.");
+        renderCombat();
+      }
+      function editCombatantName(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        const n = prompt("Résztvevő neve:", c.name);
+        if (n === null) return;
+        c.name = n.trim() || c.name;
+        log(f, "Résztvevő átnevezve: " + c.name);
+        renderCombat();
+      }
+      function addAbilityToCombatant(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        const name = prompt("Képesség neve:");
+        if (!name?.trim()) return;
+        const ap = num(prompt("AP-költség:", "1"), 1);
+        if (!Number.isInteger(ap) || ap < 0 || ap > 20) {
+          toast("Érvénytelen AP-költség.");
+          return;
+        }
+        const desc = prompt("Képesség leírása:", "") ?? "";
+        const perRound = confirm("Körönként csak egyszer használható?");
+        c.abilities.push({
+          id: uid("ability"),
+          name: name.trim(),
+          ap,
+          desc,
+          perRound,
+        });
+        log(f, c.name + " új képessége: " + name.trim());
+        renderCombat();
+      }
+      function deleteAbility(id, aid) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        c.abilities = c.abilities.filter((a) => a.id !== aid);
+        delete c.abilityState[aid];
+        log(f, c.name + " képessége eltávolítva.");
+        renderCombat();
+      }
+      function setTempArmor(id) {
+        const f = currentFight(),
+          c = findCombatant(f, id);
+        if (!c) return;
+        if (c.temporaryArmor) {
+          c.temporaryArmor = 0;
+          log(f, c.name + " eldobta a rögtönzött védelmet AP-költség nélkül.");
+        } else {
+          if (c.status !== "active" || c.ap < 1) {
+            toast("Ehhez aktív állapot és 1 AP szükséges.");
+            return;
+          }
+          c.ap--;
+          c.temporaryArmor = 1;
+          if (c.ap <= 0) c.acted = true;
+          log(
+            f,
+            c.name +
+              " rögtönzött védelmet vett fel: +1 ideiglenes Páncél (−1 AP).",
+          );
+          if (c.acted && c.ap <= 0)
+            log(
+              f,
+              c.name + " AP-ja elfogyott, ezért cselekedettként lett jelölve.",
+            );
+        }
+        renderCombat();
+      }
+      function statusOptions(current) {
+        return ["active", "inactive", "dead", "removed"]
+          .map(
+            (s) =>
+              `<option value="${s}" ${current === s ? "selected" : ""}>${statusLabel(s)}</option>`,
+          )
+          .join("");
+      }
+      function renderPlayerCard(c) {
+        return `<div class="card ${c.status === "dead" ? "dead" : c.status === "inactive" || c.status === "removed" ? "inactive" : ""}"><div class="between"><div><h3>${esc(c.name)}</h3><span class="tag">Játékos</span><span class="tag">${statusLabel(c.status)}</span></div><button class="btn-small" onclick="editCombatantName('${c.id}')">Átnevezés</button></div><div class="row" style="margin-top:8px"><button class="btn-small ${c.acted ? "" : "btn-rust"}" onclick="markActed('${c.id}',${!c.acted})">${c.acted ? "Cselekedett ✓" : "Cselekedett"}</button><label>Állapot</label><select style="width:auto" onchange="changeStatus('${c.id}',this.value)">${statusOptions(c.status)}</select></div></div>`;
+      }
+      function renderMonsterCard(c) {
+        const hpPct = c.maxHp ? clamp((c.hp / c.maxHp) * 100, 0, 100) : 0,
+          dead = c.status === "dead",
+          inactive = c.status === "inactive" || c.status === "removed";
+        return `<div class="card ${dead ? "dead" : inactive ? "inactive" : ""}"><div class="between"><div><h3>${esc(c.name)}</h3><span class="tag">${esc(c.group)}</span><span class="tag">${statusLabel(c.status)}</span>${c.temporaryArmor ? '<span class="tag">+1 ideiglenes Páncél</span>' : ""}</div><button class="btn-small" onclick="editCombatantName('${c.id}')">Átnevezés</button></div><div class="statline"><span>Kitartás</span><b>${c.hp}/${c.maxHp}</b></div><div class="hpbar"><span style="width:${hpPct}%"></span></div><div class="statline"><span>AP: <b>${c.ap}/${c.baseAP}</b></span><span>Páncél: <b>${c.armor + (c.temporaryArmor || 0)}</b></span><span>Erő: ${c.strength >= 0 ? "+" : ""}${c.strength}</span><span>Ész: ${c.intellect >= 0 ? "+" : ""}${c.intellect}</span><span>Sebzés: ${c.damage}</span></div><div class="actions"><button onclick="changeHP('${c.id}',-1)">−1 HP</button><button onclick="changeHP('${c.id}',1)">+1 HP</button><button onclick="changeHP('${c.id}',-3)">−3 HP</button><button onclick="editHP('${c.id}')">HP szerkesztése</button><button onclick="rollMonster('${c.id}')">D6 dobás</button><span class="last-roll">Utolsó dobás: ${c.lastRoll ?? "—"}</span><button onclick="setTempArmor('${c.id}')">${c.temporaryArmor ? "Védelem eldobása (0 AP)" : "Rögtönzött védelem (1 AP)"}</button><button class="btn-danger" onclick="instantKill('${c.id}')">Azonnali halál</button></div><div class="row" style="margin-top:8px"><button class="btn-small ${c.acted ? "" : "btn-rust"}" onclick="markActed('${c.id}',${!c.acted})">${c.acted ? "Cselekedett ✓" : "Cselekedett"}</button><label>Állapot</label><select style="width:auto" onchange="changeStatus('${c.id}',this.value)">${statusOptions(c.status)}</select><button class="btn-small" onclick="removeCombatant('${c.id}')">Eltávolítás</button></div><hr><h4>Alapcselekvések</h4><div class="actions">${BASE_ACTIONS.map((a) => `<button title="${esc(a.desc)}" ${c.status !== "active" || c.ap < a.ap ? "disabled" : ""} onclick="spendAP('${c.id}',${a.ap},'${a.name.replace(/'/g, "\\'")}')">${esc(a.name)} · ${a.ap} AP</button>`).join("")}</div><p class="muted" style="font-size:11px">A program az AP-t vonja le és naplóz; a próbát és a sebzést a mesélő kezeli.</p><hr><div class="between"><h4>Egyedi képességek</h4><button class="btn-small" onclick="addAbilityToCombatant('${c.id}')">+ Képesség</button></div>${(c.abilities || []).map((a) => `<div class="card"><div class="between"><b>${esc(a.name)} · ${a.ap} AP</b><div class="row">${a.perRound ? `<span class="tag">${c.abilityState[a.id] ? "Felhasználva" : "Körönként egyszer"}</span>` : '<span class="tag">Többször használható</span>'}<button class="btn-small" ${c.status !== "active" || c.ap < a.ap || (a.perRound && c.abilityState[a.id]) ? "disabled" : ""} onclick="spendAP('${c.id}',${a.ap},'${a.name.replace(/'/g, "\\'")}','${a.id}')">Végrehajtás</button><button class="btn-small btn-danger" onclick="deleteAbility('${c.id}','${a.id}')">×</button></div></div><small>${esc(a.desc || "Nincs leírás.")}</small></div>`).join("") || '<small class="muted">Nincs egyedi képesség.</small>'}</div>`;
+      }
+      function renderCombat() {
+        renderSelectors();
+        renderRoster();
+        const f = currentFight();
+        $("roundDisplay").value = f?.round || 1;
+        $("fightStatus").value = f?.status || "active";
+        const list = $("initiativeList"),
+          cards = $("combatants");
+        if (!f) {
+          list.innerHTML =
+            '<div class="empty">Hozz létre egy harcot a kezdéshez.</div>';
+          cards.innerHTML = '<div class="empty">Nincs harc kiválasztva.</div>';
+          $("combatLog").innerHTML = "";
+          $("monsterCount").textContent = "";
+          return;
+        }
+        const ordered = orderedCombatants(f);
+        $("monsterCount").textContent = f.combatants.length + " résztvevő";
+        list.innerHTML = ordered.length
+          ? ordered
+              .map(
+                (c, i) =>
+                  `<div class="turn ${c.acted ? "done" : ""}"><div class="turn-number">${i + 1}</div><div><b>${esc(c.name)}</b><div><small>${esc(c.group || c.kind)} · ${c.init == null ? "Nincs dobás" : "Kezdeményezés: " + c.init} · ${statusLabel(c.status)}</small></div><label class="inline-label" style="margin-top:4px"><input type="checkbox" ${c.acted ? "checked" : ""} onchange="markActed('${c.id}',this.checked)"> Már cselekedett</label></div><div class="row"><button class="btn-small" onclick="moveInitiative('${c.id}',-1)" ${i === 0 ? "disabled" : ""}>↑</button><button class="btn-small" onclick="moveInitiative('${c.id}',1)" ${i === ordered.length - 1 ? "disabled" : ""}>↓</button><input aria-label="Kezdeményezés" type="number" min="1" max="6" value="${c.init ?? ""}" placeholder="d6" onchange="setInitiative('${c.id}',this.value)"></div></div>`,
+              )
+              .join("")
+          : '<div class="empty">Adj hozzá játékosokat vagy szörnyeket.</div>';
+        cards.innerHTML =
+          ordered
+            .map((c) =>
+              c.kind === "monster" ? renderMonsterCard(c) : renderPlayerCard(c),
+            )
+            .join("") || '<div class="empty">Nincs résztvevő.</div>';
+        $("combatLog").innerHTML =
+          (f.log || [])
+            .slice(0, 100)
+            .map(
+              (l) =>
+                `<div class="logentry"><time>${esc(new Date(l.time).toLocaleTimeString("hu-HU"))}</time><span class="tag">Kör ${l.round}</span> ${esc(l.msg)}</div>`,
+            )
+            .join("") || '<small class="muted">Még nincs esemény.</small>';
+        updateStats();
+      }
+      function renderSelectors() {
+        const ts = $("templateSelect"),
+          tv = ts.value;
+        ts.innerHTML = state.templates
+          .map((t) => `<option value="${t.id}">${esc(t.name)}</option>`)
+          .join("");
+        if (state.templates.some((t) => t.id === tv)) ts.value = tv;
+        const fs = $("fightSelect"),
+          fv = state.selectedFight;
+        fs.innerHTML = state.fights
+          .map(
+            (f) =>
+              `<option value="${f.id}">${esc(f.name)} · ${esc({ active: "aktív", paused: "szünet", closed: "lezárt" }[f.status] || f.status)}</option>`,
+          )
+          .join("");
+        if (state.fights.some((f) => f.id === fv)) fs.value = fv;
+        else if (state.fights.length) {
+          state.selectedFight = state.fights[0].id;
+          fs.value = state.selectedFight;
+        }
+        const lf = $("lootFight"),
+          old = lf.value;
+        lf.innerHTML =
+          '<option value="">Nincs hozzárendelve</option>' +
+          state.fights
+            .map((f) => `<option value="${f.id}">${esc(f.name)}</option>`)
+            .join("");
+        if (state.fights.some((f) => f.id === old)) lf.value = old;
+        else if (currentFight()) lf.value = currentFight().id;
+        const owner = $("lootOwner"),
+          ov = owner.value,
+          f = findFight(lf.value) || currentFight();
+        owner.innerHTML =
+          '<option value="fight">Teljes harc</option>' +
+          (f?.combatants || [])
+            .map((c) => `<option value="${c.id}">${esc(c.name)}</option>`)
+            .join("");
+        if ([...owner.options].some((o) => o.value === ov)) owner.value = ov;
+      }
+      function newTemplate() {
+        const t = {
+          id: uid("template"),
+          name: "Új szörnytípus",
+          hp: 8,
+          armor: 0,
+          ap: 2,
+          strength: 0,
+          intellect: 0,
+          damage: 1,
+          notes: "",
+          abilities: [],
+        };
+        state.templates.push(t);
+        state.selectedTemplate = t.id;
+        save();
+        renderTemplates();
+      }
+      function selectTemplate(id) {
+        state.selectedTemplate = id;
+        renderTemplates();
+      }
+      function editTemplateField(id, field, value) {
+        const t = findTemplate(id);
+        if (!t) return;
+        if (field === "name" || field === "notes") t[field] = value;
+        else {
+          let n = num(value, 0);
+          if (field === "hp") n = clamp(Math.floor(n), 1, 100000);
+          if (field === "armor") n = clamp(Math.floor(n), 0, 6);
+          if (field === "ap") n = clamp(Math.floor(n), 0, 5);
+          if (field === "strength" || field === "intellect")
+            n = clamp(Math.floor(n), -3, 3);
+          if (field === "damage") n = Math.max(0, n);
+          t[field] = n;
+        }
+        save();
+      }
+      function templateNumberField(t, field, label, min, max) {
+        return `<div><label>${label}</label><input type="number" min="${min}" ${max !== null ? `max="${max}"` : ""} value="${t[field]}" onchange="editTemplateField('${t.id}','${field}',this.value)"></div>`;
+      }
+      function addTemplateAbility(id) {
+        const t = findTemplate(id);
+        if (!t) return;
+        const name = prompt("Képesség neve:");
+        if (!name?.trim()) return;
+        const ap = num(prompt("AP-költség:", "1"), 1);
+        if (!Number.isInteger(ap) || ap < 0 || ap > 20) {
+          toast("Érvénytelen AP-költség.");
+          return;
+        }
+        const desc = prompt("Leírás:", "") ?? "";
+        const perRound = confirm("Körönként csak egyszer használható?");
+        t.abilities.push({
+          id: uid("ability"),
+          name: name.trim(),
+          ap,
+          desc,
+          perRound,
+        });
+        save();
+        renderTemplates();
+      }
+      function deleteTemplateAbility(tid, aid) {
+        const t = findTemplate(tid);
+        if (!t) return;
+        t.abilities = t.abilities.filter((a) => a.id !== aid);
+        save();
+        renderTemplates();
+      }
+      function deleteTemplate(id) {
+        const t = findTemplate(id);
+        if (!t) return;
+        if (
+          state.fights.some((f) =>
+            f.combatants.some((c) => c.templateId === id),
+          ) &&
+          !confirm(
+            "Ehhez a típushoz harcbeli példányok tartoznak. Ezek megmaradnak. Folytatod?",
+          )
+        )
+          return;
+        if (!confirm("Törlöd a szörnytípust: " + t.name + "?")) return;
+        state.templates = state.templates.filter((x) => x.id !== id);
+        state.selectedTemplate = state.templates[0]?.id || null;
+        save();
+        renderTemplates();
+        renderCombat();
+      }
+      function renderTemplates() {
+        const list = $("templateList"),
+          editor = $("templateEditor");
+        list.innerHTML =
+          state.templates
+            .map(
+              (t) =>
+                `<div class="card ${t.id === state.selectedTemplate ? "current" : ""}"><div class="between"><div><h3>${esc(t.name)}</h3><small>HP ${t.hp} · Páncél ${t.armor} · AP ${t.ap}</small></div><button class="btn-small" onclick="selectTemplate('${t.id}')">Szerkesztés</button></div></div>`,
+            )
+            .join("") || '<div class="empty">Nincs szörnytípus.</div>';
+        const t = findTemplate(state.selectedTemplate);
+        if (!t) {
+          editor.innerHTML =
+            '<p class="muted">Válassz ki egy típust, vagy hozz létre újat.</p>';
+          renderSelectors();
+          return;
+        }
+        editor.innerHTML = `<div><label>Név</label><input value="${esc(t.name)}" onchange="editTemplateField('${t.id}','name',this.value)"></div><div class="fieldgrid">${templateNumberField(t, "hp", "Kitartás (1–100000)", 1, 100000)}${templateNumberField(t, "armor", "Páncél (0–6)", 0, 6)}${templateNumberField(t, "ap", "Alap AP (0–5)", 0, 5)}${templateNumberField(t, "strength", "Erő (−3…+3)", -3, 3)}${templateNumberField(t, "intellect", "Ész (−3…+3)", -3, 3)}${templateNumberField(t, "damage", "Alapsebzés", 0, null)}</div><label>Leírás / megjegyzés</label><textarea onchange="editTemplateField('${t.id}','notes',this.value)">${esc(t.notes || "")}</textarea><hr><div class="between"><h3>Egyedi képességek</h3><button onclick="addTemplateAbility('${t.id}')">+ Képesség</button></div>${(t.abilities || []).map((a) => `<div class="card"><div class="between"><b>${esc(a.name)} · ${a.ap} AP</b><button class="btn-small btn-danger" onclick="deleteTemplateAbility('${t.id}','${a.id}')">Törlés</button></div><small>${esc(a.desc || "")}</small>${a.perRound ? '<div><span class="tag">Körönként egyszer</span></div>' : ""}</div>`).join("") || '<p class="muted">Nincs egyedi képesség.</p>'}<hr><button class="btn-danger" onclick="deleteTemplate('${t.id}')">Szörnytípus törlése</button>`;
+        renderSelectors();
+      }
+      function addLoot() {
+        const f = findFight($("lootFight").value),
+          name = $("lootName").value.trim(),
+          qty = num($("lootQty").value, 0);
+        if (!name || qty <= 0) {
+          toast("Adj meg nevet és pozitív mennyiséget.");
+          return;
+        }
+        const item = {
+          id: uid("loot"),
+          fightId: f?.id || null,
+          name,
+          qty,
+          remaining: qty,
+          owner: $("lootOwner").value,
+          status: $("lootStatus").value,
+          notes: $("lootNotes").value.trim(),
+          created: stamp(),
+        };
+        state.loot.unshift(item);
+        if (f) log(f, "Zsákmány rögzítve: " + name + " × " + qty);
+        $("lootName").value = "";
+        $("lootNotes").value = "";
+        save();
+        renderLoot();
+        toast("Zsákmány rögzítve.");
+      }
+      function setLootStatus(id, status) {
+        const l = state.loot.find((x) => x.id === id);
+        if (!l) return;
+        l.status = status;
+        const f = findFight(l.fightId);
+        if (f) log(f, "Zsákmány állapota: " + l.name + " → " + status);
+        save();
+        renderLoot();
+      }
+      function splitLoot(id) {
+        const l = state.loot.find((x) => x.id === id);
+        if (!l) return;
+        const n = num(
+          prompt(
+            "Kiosztandó mennyiség (max. " + l.remaining + "):",
+            String(l.remaining),
+          ),
+          0,
+        );
+        if (n <= 0 || n > l.remaining) {
+          toast("Adj meg érvényes, fennmaradó mennyiségen belüli értéket.");
+          return;
+        }
+        const recipient = prompt("Ki kapja?", "Kiosztva");
+        if (recipient === null) return;
+        l.remaining = +(l.remaining - n).toFixed(4);
+        state.loot.unshift({
+          id: uid("loot"),
+          fightId: l.fightId,
+          name: l.name + " — " + (recipient.trim() || "Kiosztva"),
+          qty: n,
+          remaining: n,
+          owner: recipient.trim() || "Kiosztva",
+          status: "taken",
+          notes: "Kiosztott tétel: " + l.name,
+          created: stamp(),
+        });
+        const f = findFight(l.fightId);
+        if (f)
+          log(
+            f,
+            "Zsákmány megosztva: " + l.name + " × " + n + " → " + recipient,
+          );
+        save();
+        renderLoot();
+      }
+      function deleteLoot(id) {
+        if (!confirm("Törlöd ezt a zsákmánybejegyzést?")) return;
+        state.loot = state.loot.filter((x) => x.id !== id);
+        save();
+        renderLoot();
+      }
+      function renderLoot() {
+        renderSelectors();
+        $("lootList").innerHTML =
+          state.loot
+            .map(
+              (l) =>
+                `<div class="card"><div class="between"><div><h3>${esc(l.name)}</h3><small>${esc(findFight(l.fightId)?.name || "Nincs harc hozzárendelve")} · ${esc(l.owner === "fight" ? "Teljes harc" : l.owner)}</small></div><span class="tag">${esc({ taken: "Felvéve", left: "Hátrahagyva", undecided: "Eldöntetlen" }[l.status] || l.status)}</span></div><div class="statline"><span>Mennyiség: ${l.qty}</span><span>Fennmaradó: ${l.remaining}</span></div>${l.notes ? `<p>${esc(l.notes)}</p>` : ""}<div class="row"><select style="width:auto" onchange="setLootStatus('${l.id}',this.value)"><option value="undecided" ${l.status === "undecided" ? "selected" : ""}>Eldöntetlen</option><option value="taken" ${l.status === "taken" ? "selected" : ""}>Felvéve</option><option value="left" ${l.status === "left" ? "selected" : ""}>Hátrahagyva</option></select><button class="btn-small" onclick="splitLoot('${l.id}')" ${l.remaining <= 0 ? "disabled" : ""}>Mennyiség szétosztása</button><button class="btn-small btn-danger" onclick="deleteLoot('${l.id}')">Törlés</button></div></div>`,
+            )
+            .join("") ||
+          '<div class="empty">Még nincs zsákmány rögzítve.</div>';
+      }
+      function renderHistory() {
+        $("historyList").innerHTML =
+          state.fights
+            .map(
+              (f) =>
+                `<div class="panel"><div class="between"><div><h3>${esc(f.name)}</h3><small>Létrehozva: ${esc(new Date(f.created).toLocaleString("hu-HU"))} · ${f.combatants.length} résztvevő · ${f.round}. kör</small></div><div class="row"><span class="tag">${esc({ active: "Aktív", paused: "Szüneteltetett", closed: "Lezárt" }[f.status] || f.status)}</span><button onclick="openFight('${f.id}')">Megnyitás</button><button class="btn-danger" onclick="deleteFight('${f.id}')">Törlés</button></div></div><details><summary>Események (${f.log.length})</summary><div class="log">${f.log.map((l) => `<div class="logentry"><time>${esc(new Date(l.time).toLocaleString("hu-HU"))}</time><span class="tag">Kör ${l.round}</span> ${esc(l.msg)}</div>`).join("") || "Nincs naplóbejegyzés."}</div></details><details><summary>Résztvevők</summary>${f.combatants.map((c) => `<div class="logentry">${esc(c.name)} · ${statusLabel(c.status)}${c.kind === "monster" ? " · HP " + c.hp + "/" + c.maxHp + " · AP " + c.ap + "/" + c.baseAP : ""} · kezdeményezés ${c.init ?? "—"}</div>`).join("")}</details></div>`,
+            )
+            .join("") ||
+          '<div class="empty">Még nincs harc az előzményekben.</div>';
+      }
+      function openFight(id) {
+        state.selectedFight = id;
+        save();
+        switchView("combat");
+      }
+      function deleteFight(id) {
+        const f = findFight(id);
+        if (
+          !f ||
+          !confirm(
+            "Törlöd a harcot és a naplóját? A zsákmánybejegyzések megmaradnak.",
+          )
+        )
+          return;
+        state.fights = state.fights.filter((x) => x.id !== id);
+        if (state.selectedFight === id)
+          state.selectedFight = state.fights[0]?.id || null;
+        save();
+        renderAll();
+      }
+      function clearVisibleLog() {
+        const f = currentFight();
+        if (!f || !confirm("Törlöd ennek a harcnak az eseménynaplóját?"))
+          return;
+        f.log = [];
+        save();
+        renderCombat();
+      }
+      function exportData() {
+        const data = JSON.stringify({ ...state, exportedAt: stamp() }, null, 2),
+          blob = new Blob([data], { type: "application/json" }),
+          url = URL.createObjectURL(blob),
+          a = document.createElement("a");
+        a.href = url;
+        a.download =
+          "zombie-road-mentes-" +
+          new Date().toISOString().slice(0, 10) +
+          ".json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast("JSON-mentés elkészült.");
+      }
+      function importData() {
+        const file = $("importFile").files[0];
+        if (!file) {
+          toast("Válassz egy JSON-fájlt.");
+          return;
+        }
+        if (
+          !confirm(
+            "A betöltés felülírja a jelenlegi adatokat. Készítettél biztonsági mentést? Folytatod?",
+          )
+        )
+          return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const incoming = normaliseState(JSON.parse(reader.result));
+            state = {
+              version: 3,
+              templates: incoming.templates,
+              fights: incoming.fights,
+              loot: incoming.loot,
+              players: incoming.players || [],
+              selectedFight:
+                incoming.selectedFight || incoming.fights[0]?.id || null,
+              selectedTemplate:
+                incoming.selectedTemplate || incoming.templates[0]?.id || null,
+            };
+            if (state.selectedFight && !findFight(state.selectedFight))
+              state.selectedFight = state.fights[0]?.id || null;
+            if (state.selectedTemplate && !findTemplate(state.selectedTemplate))
+              state.selectedTemplate = state.templates[0]?.id || null;
+            save();
+            renderAll();
+            toast("Mentés betöltve.");
+          } catch (e) {
+            alert("Nem sikerült betölteni a fájlt: " + e.message);
+          }
+        };
+        reader.readAsText(file);
+      }
+      function resetAll() {
+        if (
+          !confirm(
+            "Biztosan törlöd az összes harcot, szörnytípust, zsákmányt és naplóbejegyzést?",
+          )
+        )
+          return;
+        if (!confirm("Ez nem vonható vissza. Készítettél biztonsági mentést?"))
+          return;
+        state = defaultState();
+        save();
+        renderAll();
+        switchView("combat");
+      }
+      function renderAll() {
+        renderSelectors();
+        initPlayerFields();
+        renderCombat();
+        renderTemplates();
+        renderLoot();
+        renderHistory();
+        updateStats();
+      }
+      $("fightSelect").addEventListener("change", (e) => {
+        state.selectedFight = e.target.value || null;
+        save();
+        renderCombat();
+      });
+      $("lootFight").addEventListener("change", renderSelectors);
+      initPlayerFields();
+      renderAll();
+    </script>
+  </body>
+</html>

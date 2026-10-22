@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171513">
+<title>Zombie Road – Történetkezelő</title>
+<style>
+:root {
+  --bg:#171513;
+  --panel:#24211d;
+  --panel2:#302b25;
+  --paper:#d5c7a9;
+  --paper2:#b8a789;
+  --text:#e8dfce;
+  --muted:#a69a85;
+  --red:#a6322b;
+  --red2:#d04b3e;
+  --green:#7c9a67;
+  --line:#51483c;
+  --gold:#c5a76a;
+  --input:#191714;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{
+  cursor:pointer;background:var(--panel2);color:var(--text);
+  border:1px solid var(--line);border-radius:5px;padding:8px 11px;
+}
+button:hover{border-color:var(--gold);background:#3b332b}
+button.primary{background:#772b25;border-color:#a34a3e}
+button.danger{color:#f19a8f}
+button.small{padding:5px 8px;font-size:13px}
+button.active{background:#6f3028;border-color:var(--red2)}
+input,textarea,select{
+  width:100%;background:var(--input);color:var(--text);
+  border:1px solid var(--line);border-radius:5px;padding:9px;
+}
+textarea{resize:vertical;min-height:300px}
+input:focus,textarea:focus,select:focus{outline:1px solid var(--gold)}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:20px;margin:0}
+h2{font-size:19px;margin-bottom:12px}
+h3{font-size:15px;margin-bottom:9px}
+small,.muted{color:var(--muted)}
+header{
+  position:sticky;top:0;z-index:10;
+  background:#201c18;border-bottom:2px solid var(--red);
+  padding:12px 16px;
+}
+.header-main{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;margin-right:auto}
+.brand-icon{font-size:24px}
+.header-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.header-controls select{min-width:180px;max-width:280px}
+nav{
+  display:flex;gap:6px;padding:9px 12px;
+  overflow-x:auto;background:#1c1916;border-bottom:1px solid var(--line);
+}
+nav button{white-space:nowrap;flex-shrink:0}
+main{max-width:1500px;margin:auto;padding:16px}
+.view{display:none}
+.view.active{display:block}
+.panel{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:7px;padding:14px;min-width:0;
+}
+.grid{display:grid;gap:12px}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.stack{display:grid;gap:12px}
+.field{min-width:0}
+.field.wide{grid-column:1/-1}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.stat{
+  background:#1d1a17;border:1px solid var(--line);
+  border-left:3px solid var(--red);padding:12px;border-radius:5px;
+}
+.stat strong{display:block;font-size:23px}
+.stat span{font-size:12px;color:var(--muted)}
+.scene-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px}
+.scene-list{display:grid;gap:6px;align-content:start}
+.scene-item{
+  width:100%;text-align:left;padding:10px;background:#1e1b18;
+}
+.scene-item.selected{border-color:var(--red2);background:#3a2823}
+.scene-item strong{display:block;overflow-wrap:anywhere}
+.scene-item small{display:block;margin-top:3px}
+.badge{
+  display:inline-block;padding:2px 6px;border-radius:3px;
+  font-size:11px;border:1px solid var(--line);color:var(--muted);
+}
+.badge.done{color:#b4d29e;border-color:#536c46}
+.badge.current{color:#f1b1a7;border-color:#9d4037}
+.badge.optional{color:var(--gold)}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.empty{
+  color:var(--muted);padding:24px 12px;text-align:center;
+  border:1px dashed var(--line);border-radius:5px;
+}
+.card-note{
+  background:#1c1916;border-left:3px solid var(--gold);
+  padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.reading{
+  background:var(--paper);color:#29231b;padding:16px;border-radius:5px;
+  white-space:pre-wrap;overflow-wrap:anywhere;
+}
+.reading h3{color:#692d25}
+#sceneMap {
+  display: block;
+  height: auto;
+  min-height: 300px;
+  background: #191714;
+  border-radius: 8px;
+  touch-action: pan-x pan-y;
+}
+
+.map-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.map-node rect {
+  fill: #29241f;
+  stroke: #635443;
+  stroke-width: 1.4;
+  transition: fill 0.15s, stroke 0.15s;
+}
+
+.map-node:hover rect,
+.map-node:focus rect {
+  fill: #393027;
+  stroke: #c2a474;
+  stroke-width: 2;
+}
+
+.map-node.selected rect {
+  stroke: #e5b86b;
+  stroke-width: 2.5;
+}
+
+.map-node.current rect {
+  fill: #482823;
+  stroke: #d05a49;
+  stroke-width: 2.5;
+}
+
+.map-node text {
+  fill: #e8dfce;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.map-edge {
+  fill: none;
+  stroke: #8d7960;
+  stroke-width: 1.5;
+  opacity: 0.75;
+}
+
+.map-edge.optional {
+  stroke: #b69a71;
+  stroke-dasharray: 5 5;
+  opacity: 0.7;
+}
+
+.map-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.result{
+  padding:10px;border-bottom:1px solid var(--line);
+  overflow-wrap:anywhere;
+}
+.result:last-child{border-bottom:0}
+.result button{margin-top:6px}
+.checkline{display:flex;gap:8px;align-items:center}
+.checkline input{width:auto}
+.checkline label{margin:0}
+#toast{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  z-index:30;background:#e0d2b5;color:#211c17;
+  padding:10px 16px;border-radius:5px;display:none;
+  max-width:90vw;box-shadow:0 5px 20px #0008;
+}
+details summary{cursor:pointer;color:var(--gold);margin-bottom:10px}
+footer{padding:18px;text-align:center;color:#776d5d;font-size:12px}
+@media(max-width:800px){
+  main{padding:10px}
+  .grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scene-layout{grid-template-columns:1fr}
+  .scene-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .header-controls{width:100%}
+  .header-controls select{flex:1;min-width:130px}
+}
+@media(max-width:480px){
+  header{padding:10px}
+  h1{font-size:17px}
+  .grid.two,.grid.three{grid-template-columns:1fr}
+  .scene-list{grid-template-columns:1fr 1fr}
+  .panel{padding:11px}
+  button{padding:8px 9px}
+  .header-controls button{flex:1}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-main">
+    <div class="brand">
+      <span class="brand-icon">☣</span>
+      <div>
+        <h1>ZOMBIE ROAD</h1>
+        <small>Történetkezelő · Mesélői eszköz</small>
+      </div>
+    </div>
+    <div class="header-controls">
+      <select id="adventureSelect" aria-label="Kaland kiválasztása"></select>
+      <button id="newAdventureBtn">＋ Új kaland</button>
+      <button id="duplicateAdventureBtn">⧉ Másolás</button>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" data-view="dashboard">☣ Áttekintő</button>
+  <button data-view="scenes">▤ Jelenetek</button>
+  <button data-view="map">⌘ Jelenettérkép</button>
+  <button data-view="library">▣ Tartalomtár</button>
+  <button data-view="search">⌕ Keresés</button>
+  <button data-view="data">⇅ Adatok</button>
+</nav>
+
+<main>
+  <section class="view active" id="view-dashboard">
+    <div class="row between">
+      <div>
+        <h2 id="dashboardTitle">Kaland áttekintő</h2>
+        <p class="muted" id="dashboardSubtitle">A kaland állapota és a következő lépések.</p>
+      </div>
+      <button class="primary" id="continueBtn">▶ Jelenet megnyitása</button>
+    </div>
+
+    <div class="grid three" id="statsGrid"></div>
+
+    <div class="grid two" style="margin-top:12px">
+      <div class="panel">
+        <h3>Aktuális jelenet</h3>
+        <div id="currentSceneCard"></div>
+      </div>
+      <div class="panel">
+        <h3>Gyors műveletek</h3>
+        <div class="stack">
+          <button id="quickAddScene">＋ Új jelenet</button>
+          <button id="quickAddNote">✎ Játék közbeni feljegyzés</button>
+          <button id="quickMap">⌘ Jelenettérkép megnyitása</button>
+        </div>
+        <hr>
+        <div class="muted" id="saveStatus">Az adatok a böngészőben is megőrződnek.</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="row between">
+        <h3>Jelenetek áttekintése</h3>
+        <button class="small" id="dashboardAllScenes">Összes jelenet</button>
+      </div>
+      <div id="dashboardScenes"></div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <h3>Játék közbeni napló</h3>
+      <div id="recentLog"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-scenes">
+    <div class="row between">
+      <div>
+        <h2>Jelenetek</h2>
+        <p class="muted">A felkészített terv és a tényleges játékállapot külön kezelhető.</p>
+      </div>
+      <button class="primary" id="addSceneBtn">＋ Jelenet létrehozása</button>
+    </div>
+    <div class="scene-layout">
+      <div class="panel">
+        <div class="field">
+          <label for="sceneFilter">Jelenetek szűrése</label>
+          <input id="sceneFilter" placeholder="Név, helyszín, jegyzet…">
+        </div>
+        <div class="row" style="margin:10px 0">
+          <button class="small" id="sceneSortOrder">Sorrend: terv szerint</button>
+        </div>
+        <div class="scene-list" id="sceneList"></div>
+      </div>
+      <div class="panel" id="sceneEditor">
+        <div class="empty">Válassz egy jelenetet, vagy hozz létre újat.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-map">
+    <div class="row between">
+      <div>
+        <h2>Jelenettérkép</h2>
+        <p class="muted">A kapcsolatok a jelenetekben megadott következő lépésekből rajzolódnak ki.</p>
+      </div>
+      <button id="mapAddScene">＋ Jelenet</button>
+    </div>
+    <div class="panel">
+      <div class="row">
+        <span class="badge">━━ Fő kapcsolat</span>
+        <span class="badge">┄┄ Opcionális kapcsolat</span>
+        <span class="badge current">Aktuális jelenet</span>
+      </div>
+      <div style="margin-top:12px;overflow:auto">
+        <svg id="sceneMap" viewBox="0 0 900 500" role="img" aria-label="Jelenetek közötti kapcsolatok"></svg>
+      </div>
+      <div class="map-hint">Bökj vagy kattints egy jelenetre a megnyitásához. A térkép automatikusan újrarajzolódik, ha változtatod a kapcsolatokat.</div>
+      <div id="mapLegend" class="muted" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-library">
+    <div class="row between">
+      <div>
+        <h2>Tartalomtár</h2>
+        <p class="muted">Újra felhasználható szereplők, helyszínek és egyéb elemek.</p>
+      </div>
+      <button class="primary" id="addLibraryItem">＋ Tartalmi elem</button>
+    </div>
+    <div class="grid two">
+      <div class="panel">
+        <label for="libraryTypeFilter">Típus</label>
+        <select id="libraryTypeFilter">
+          <option value="all">Minden típus</option>
+          <option value="npc">Szereplő / NPC</option>
+          <option value="location">Helyszín</option>
+          <option value="event">Esemény</option>
+          <option value="other">Egyéb</option>
+        </select>
+        <div id="libraryList" style="margin-top:12px"></div>
+      </div>
+      <div class="panel" id="libraryEditor">
+        <div class="empty">Válassz egy elemet, vagy hozz létre újat.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-search">
+    <h2>Keresés a kalandban</h2>
+    <div class="panel">
+      <label for="searchInput">Keresőkifejezés</label>
+      <input id="searchInput" placeholder="Például: benzinkút, rádió, vérnyom…">
+      <p class="muted" style="margin:8px 0 0">A keresés a felkészített anyagokban és a játék közben rögzített jegyzetekben is keres.</p>
+    </div>
+    <div class="panel" style="margin-top:12px">
+      <div id="searchResults"><div class="empty">Írj be legalább két karaktert.</div></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-data">
+    <h2>Adatkezelés</h2>
+    <div class="grid two">
+      <div class="panel">
+        <h3>JSON-mentés és betöltés</h3>
+        <p>A JSON tartalmazza a kalandokat, a jeleneteket, a tartalomtárat és a játék közbeni állapotokat.</p>
+        <div class="stack">
+          <button class="primary" id="exportBtn">↓ JSON exportálása</button>
+          <button id="importBtn">↑ JSON betöltése</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden>
+          <button id="exportCurrentBtn">↓ Csak a kiválasztott kaland exportálása</button>
+        </div>
+        <hr>
+        <p class="muted">Az exportált fájlt őrizd meg külön is. A böngésző helyi tárhelye nem helyettesíti a biztonsági mentést.</p>
+      </div>
+      <div class="panel">
+        <h3>Kiválasztott kaland</h3>
+        <div id="dataAdventureInfo"></div>
+        <hr>
+        <div class="stack">
+          <button id="renameAdventureBtn">Kaland átnevezése</button>
+          <button id="resetPlayBtn">Játékállapot visszaállítása</button>
+          <button class="danger" id="deleteAdventureBtn">Kaland törlése</button>
+        </div>
+        <p class="muted" style="margin-top:12px">A játékállapot visszaállítása a felkészített jeleneteket és jegyzeteket meghagyja, a tényleges játék során rögzített adatokat törli.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Zombie Road · Önálló, helyben futó történetkezelő · Nincs szerverkapcsolat</footer>
+<div id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+const APP_VERSION = 1;
+const STORAGE_KEY = "zombieRoadStoryManager_v1";
+
+const $ = id => document.getElementById(id);
+const uid = prefix => prefix + "_" + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
+const now = () => new Date().toISOString();
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const safeText = value => String(value ?? "");
+const selectedOption = (value, current) => value === current ? "selected" : "";
+const checked = value => value ? "checked" : "";
+
+function makeScene(name, order=0) {
+  return {
+    id:uid("scene"), name:name || "Új jelenet", order,
+    optional:false, plannedStatus:"planned",
+    location:"", summary:"", playerText:"", gmSecret:"",
+    trigger:"", npcs:"", hazards:"", loot:"",
+    reminders:"", nextIds:[], optionalNextIds:[],
+    preparedNotes:"",
+    play:{status:"unplayed", notes:"", outcome:"", changedText:"", log:[]}
+  };
+}
+
+function makeAdventure(name) {
+  const first = makeScene("Kezdőjelenet",0);
+  return {
+    id:uid("adv"), name:name || "Új kaland",
+    description:"", createdAt:now(), updatedAt:now(),
+    scenes:[first], currentSceneId:first.id,
+    library:[], log:[]
+  };
+}
+
+function makeDemo() {
+  const a = makeAdventure("Példakaland – Az utolsó benzinkút");
+  a.description = "Minta a történetkezelő használatához. Szabadon átírható vagy törölhető.";
+  const start = a.scenes[0];
+  start.location = "Országút, elhagyatott pihenő";
+  start.summary = "A túlélők üzemanyagot keresnek. A benzinkút felől fémes csattanás hallatszik.";
+  start.playerText = "Az út mentén rozsdás autók sorakoznak. A benzinkút neonfelirata néha felvillan. Odabentről valami a padlón húzódik.";
+  start.gmSecret = "A zajt egy elakadt fémrács okozza. A bolt hátsó részében valaki elrejtőzött.";
+  start.trigger = "Amikor a csapat kiszáll az autóból.";
+  start.reminders = "Ha harc kezdődik, a különálló harcrendszerben készítsd elő az összecsapást.";
+  const station = makeScene("A benzinkút",1);
+  station.location = "Benzinkút és shop";
+  station.summary = "A csapat bejut az épületbe, és átkutatja a készleteket.";
+  station.playerText = "A levegőben benzin és állott étel szaga keveredik. A polcok felborultak, a kassza nyitva áll.";
+  station.gmSecret = "A raktár ajtaja belülről van eltorlaszolva.";
+  const road = makeScene("A hátsó kijárat",2);
+  road.location = "Rakodóudvar";
+  road.summary = "A hátsó udvar egy másik útvonalat kínál.";
+  road.optional = true;
+  road.playerText = "A hátsó udvarra nyíló ajtón keresztül keskeny rakodóudvar tárul fel. A kerítés egyik része kidőlt.";
+  start.nextIds = [station.id];
+  start.optionalNextIds = [road.id];
+  station.nextIds = [road.id];
+  a.scenes.push(station,road);
+  a.library.push({
+    id:uid("lib"),type:"npc",name:"Ismeretlen túlélő",
+    description:"A benzinkút raktárában rejtőzik. Motivációja egyelőre a mesélő döntése.",
+    tags:"benzinkút, túlélő"
+  });
+  return a;
+}
+
+let state = {
+  version:APP_VERSION,
+  adventures:[makeDemo()],
+  selectedAdventureId:null
+};
+state.selectedAdventureId = state.adventures[0].id;
+
+let selectedSceneId = null;
+let selectedLibraryId = null;
+let sortScenesByOrder = true;
+let toastTimer = null;
+
+function currentAdventure() {
+  return state.adventures.find(a => a.id === state.selectedAdventureId) || state.adventures[0] || null;
+}
+function currentScene(a=currentAdventure()) {
+  return a?.scenes.find(s => s.id === (selectedSceneId || a.currentSceneId)) || null;
+}
+function normalizeScene(s,i) {
+  const base = makeScene(s.name || "Jelenet",i);
+  return {
+    ...base,...s,
+    id:s.id || uid("scene"),
+    nextIds:Array.isArray(s.nextIds)?s.nextIds:[],
+    optionalNextIds:Array.isArray(s.optionalNextIds)?s.optionalNextIds:[],
+    play:{
+      ...base.play,...(s.play || {}),
+      log:Array.isArray(s.play?.log)?s.play.log:[]
+    }
+  };
+}
+function normalizeAdventure(a) {
+  const base = makeAdventure(a.name || "Névtelen kaland");
+  const scenes = Array.isArray(a.scenes) ? a.scenes.map(normalizeScene) : base.scenes;
+  const ids = new Set(scenes.map(s=>s.id));
+  scenes.forEach(s=>{
+    s.nextIds = s.nextIds.filter(id=>ids.has(id) && id!==s.id);
+    s.optionalNextIds = s.optionalNextIds.filter(id=>ids.has(id) && id!==s.id);
+    s.optionalNextIds = s.optionalNextIds.filter(id=>!s.nextIds.includes(id));
+  });
+  return {
+    ...base,...a,
+    id:a.id || uid("adv"),
+    scenes,
+    currentSceneId:ids.has(a.currentSceneId)?a.currentSceneId:(scenes[0]?.id || null),
+    library:Array.isArray(a.library)?a.library:[],
+    log:Array.isArray(a.log)?a.log:[]
+  };
+}
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+    $("saveStatus").textContent = "Helyi mentés: " + new Date().toLocaleTimeString("hu-HU");
+  } catch (err) {
+    $("saveStatus").textContent = "A böngésző helyi mentése nem sikerült. Használd a JSON exportot.";
+  }
+}
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.adventures) || !parsed.adventures.length) return;
+    state = {
+      version:APP_VERSION,
+      adventures:parsed.adventures.map(normalizeAdventure),
+      selectedAdventureId:parsed.selectedAdventureId
+    };
+    if (!state.adventures.some(a=>a.id===state.selectedAdventureId)) {
+      state.selectedAdventureId = state.adventures[0].id;
+    }
+  } catch(err) {
+    console.warn("A helyi adatmentés nem olvasható.",err);
+  }
+}
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>$("toast").style.display="none",2600);
+}
+function logEvent(a,message,sceneId=null) {
+  const item = {id:uid("log"),time:now(),message,sceneId};
+  a.log.unshift(item);
+  if (a.log.length>250) a.log.length=250;
+}
+function saveAndRender() {
+  const a = currentAdventure();
+  if (a) a.updatedAt = now();
+  persist();
+  renderAll();
+}
+function setView(name) {
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active",v.id==="view-"+name));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
+  if (name==="map") drawMap();
+  if (name==="scenes") renderSceneList();
+  if (name==="library") renderLibrary();
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
+
+function renderAdventureSelect() {
+  const sel = $("adventureSelect");
+  sel.innerHTML = state.adventures.map(a=>
+    `<option value="${escapeHTML(a.id)}" ${selectedOption(a.id,state.selectedAdventureId)}>${escapeHTML(a.name)}</option>`
+  ).join("");
+}
+$("adventureSelect").addEventListener("change",()=>{
+  state.selectedAdventureId = $("adventureSelect").value;
+  selectedSceneId = null;
+  selectedLibraryId = null;
+  const a=currentAdventure();
+  if(a) selectedSceneId=a.currentSceneId;
+  saveAndRender();
+});
+
+function renderAll() {
+  renderAdventureSelect();
+  renderDashboard();
+  renderSceneList();
+  renderLibrary();
+  renderDataInfo();
+  drawMap();
+  if ($("searchInput").value.trim().length>=2) renderSearch();
+}
+function sceneById(a,id) {
+  return a.scenes.find(s=>s.id===id);
+}
+function sceneLabel(a,id) {
+  return sceneById(a,id)?.name || "(hiányzó jelenet)";
+}
+function sceneStatusLabel(s) {
+  const map={unplayed:"Még nem játszott",current:"Aktuális",done:"Lezárva",skipped:"Kihagyva"};
+  return map[s.play?.status] || "Még nem játszott";
+}
+function statusBadge(s) {
+  if(s.play.status==="current") return '<span class="badge current">Aktuális</span>';
+  if(s.play.status==="done") return '<span class="badge done">Lezárva</span>';
+  if(s.play.status==="skipped") return '<span class="badge">Kihagyva</span>';
+  if(s.optional) return '<span class="badge optional">Opcionális</span>';
+  return '<span class="badge">Terv szerint</span>';
+}
+function renderDashboard() {
+  const a=currentAdventure();
+  if(!a) return;
+  const scenes=a.scenes;
+  const done=scenes.filter(s=>s.play.status==="done").length;
+  const skipped=scenes.filter(s=>s.play.status==="skipped").length;
+  const active=sceneById(a,a.currentSceneId);
+  $("dashboardTitle").textContent=a.name;
+  $("dashboardSubtitle").textContent=a.description || "A kaland állapota és a következő lépések.";
+  $("statsGrid").innerHTML=`
+    <div class="stat"><strong>${scenes.length}</strong><span>Összes jelenet</span></div>
+    <div class="stat"><strong>${done}</strong><span>Lezárt jelenet</span></div>
+    <div class="stat"><strong>${skipped}</strong><span>Kihagyott jelenet</span></div>`;
+  $("currentSceneCard").innerHTML=active?`
+    <h3>${escapeHTML(active.name)}</h3>
+    ${statusBadge(active)}
+    <p style="margin-top:10px">${escapeHTML(active.summary || "Ehhez a jelenethez még nincs rövid összefoglaló.")}</p>
+    <p class="muted">${escapeHTML(active.location || "Nincs helyszín megadva")}</p>
+    <button class="primary" id="openCurrentScene">Jelenet megnyitása</button>
+  `:'<div class="empty">Még nincs jelenet.</div>';
+  if($("openCurrentScene")) $("openCurrentScene").onclick=()=>openScene(active.id);
+  $("continueBtn").disabled=!active;
+  $("dashboardScenes").innerHTML=scenes.length?scenes
+    .slice().sort((x,y)=>x.order-y.order)
+    .map(s=>`<div class="result">
+      <div class="row between">
+        <strong>${escapeHTML(s.name)}</strong>${statusBadge(s)}
+      </div>
+      <div class="muted">${escapeHTML(s.location || "Helyszín nincs megadva")}</div>
+      <div>${escapeHTML(s.summary || "")}</div>
+      <button class="small" data-open-scene="${escapeHTML(s.id)}">Megnyitás</button>
+    </div>`).join(""):'<div class="empty">Még nincs jelenet.</div>';
+  $("dashboardScenes").querySelectorAll("[data-open-scene]").forEach(b=>b.onclick=()=>openScene(b.dataset.openScene));
+  $("recentLog").innerHTML=a.log.length?a.log.slice(0,8).map(l=>
+    `<div class="result"><small>${escapeHTML(new Date(l.time).toLocaleString("hu-HU"))}</small><div>${escapeHTML(l.message)}</div></div>`
+  ).join(""):'<div class="empty">Még nincs játék közbeni feljegyzés.</div>';
+}
+function openScene(id) {
+  selectedSceneId=id;
+  const a=currentAdventure();
+  if(a) a.currentSceneId=id;
+  setView("scenes");
+  renderSceneList();
+  renderSceneEditor();
+  persist();
+}
+function renderSceneList() {
+  const a=currentAdventure();
+  if(!a) return;
+  const filter=$("sceneFilter").value.trim().toLocaleLowerCase("hu");
+  let scenes=a.scenes.slice();
+  if(sortScenesByOrder) scenes.sort((x,y)=>x.order-y.order);
+  scenes=scenes.filter(s=>(s.name+" "+s.location+" "+s.summary+" "+s.preparedNotes+" "+s.play.notes).toLocaleLowerCase("hu").includes(filter));
+  $("sceneList").innerHTML=scenes.length?scenes.map(s=>`
+    <button class="scene-item ${s.id===selectedSceneId?"selected":""}" data-scene="${escapeHTML(s.id)}">
+      <strong>${escapeHTML(s.name)}</strong>
+      <small>${escapeHTML(s.location || "Helyszín nélkül")}</small>
+      ${statusBadge(s)}
+    </button>`).join(""):'<div class="empty">Nincs találat.</div>';
+  $("sceneList").querySelectorAll("[data-scene]").forEach(b=>b.onclick=()=>openScene(b.dataset.scene));
+}
+$("sceneFilter").addEventListener("input",renderSceneList);
+$("sceneSortOrder").onclick=()=>{
+  sortScenesByOrder=!sortScenesByOrder;
+  $("sceneSortOrder").textContent=sortScenesByOrder?"Sorrend: terv szerint":"Sorrend: létrehozás";
+  renderSceneList();
+};
+
+function field(label,key,value,opts={}) {
+  const id=opts.id || ("f_"+key);
+  const tag=opts.textarea?`<textarea id="${id}" ${opts.rows?`rows="${opts.rows}"`:""}>${escapeHTML(value)}</textarea>`:
+    `<input id="${id}" value="${escapeHTML(value)}" ${opts.placeholder?`placeholder="${escapeHTML(opts.placeholder)}"`:""}>`;
+  return `<div class="field ${opts.wide?"wide":""}"><label for="${id}">${label}</label>${tag}</div>`;
+}
+function selectField(label,id,value,options) {
+  return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${options.map(o=>
+    `<option value="${escapeHTML(o[0])}" ${selectedOption(o[0],value)}>${escapeHTML(o[1])}</option>`
+  ).join("")}</select></div>`;
+}
+function checkField(label,id,value) {
+  return `<div class="checkline"><input type="checkbox" id="${id}" ${checked(value)}><label for="${id}">${label}</label></div>`;
+}
+function renderSceneEditor() {
+  const a=currentAdventure(),s=currentScene(a), box=$("sceneEditor");
+  if(!a || !s){box.innerHTML='<div class="empty">Válassz egy jelenetet, vagy hozz létre újat.</div>';return;}
+  const links=(ids,fieldId)=>a.scenes.filter(t=>t.id!==s.id).map(t=>
+    `<label class="checkline" style="padding:5px 0;color:var(--text)">
+      <input type="checkbox" data-link-field="${fieldId}" value="${escapeHTML(t.id)}" ${checked(ids.includes(t.id))}>
+      <span>${escapeHTML(t.name)}</span>
+    </label>`).join("") || '<p class="muted">Nincs másik jelenet. Hozz létre egyet.</p>';
+
+  box.innerHTML=`
+    <div class="row between">
+      <div><h2>${escapeHTML(s.name)}</h2><small>Jelenetazonosító: ${escapeHTML(s.id)}</small></div>
+      <div class="actions">
+        <button class="small" id="sceneMakeCurrent">▶ Aktuális</button>
+        <button class="small" id="sceneDuplicate">⧉ Másolás</button>
+        <button class="small danger" id="sceneDelete">Törlés</button>
+      </div>
+    </div>
+    <div class="grid two">
+      ${field("Jelenet neve","name",s.name)}
+      ${field("Tervezett sorrend","order",s.order)}
+      ${field("Helyszín","location",s.location)}
+      <div class="field">${checkField("Opcionális / kihagyható jelenet","optional",s.optional)}</div>
+      ${field("Rövid összefoglaló","summary",s.summary,{textarea:true,wide:true})}
+    </div>
+    <hr>
+    <details open>
+      <summary>Előkészített tartalom</summary>
+      <div class="grid two">
+        ${field("Játékosoknak felolvasható leírás","playerText",s.playerText,{textarea:true,wide:true})}
+        ${field("Mesélői titok / háttérinformáció","gmSecret",s.gmSecret,{textarea:true,wide:true})}
+        ${field("Aktiváló feltétel / belépési pont","trigger",s.trigger,{textarea:true})}
+        ${field("Szereplők / NPC-k","npcs",s.npcs,{textarea:true})}
+        ${field("Veszélyek / akadályok","hazards",s.hazards,{textarea:true})}
+        ${field("Zsákmány / erőforrás","loot",s.loot,{textarea:true})}
+        ${field("Mesélői emlékeztető","reminders",s.reminders,{textarea:true})}
+        ${field("Egyéb előkészített jegyzet","preparedNotes",s.preparedNotes,{textarea:true})}
+      </div>
+    </details>
+    <hr>
+    <details open>
+      <summary>Jelenetkapcsolatok</summary>
+      <div class="grid two">
+        <div><h3>Lehetséges következő jelenetek</h3>${links(s.nextIds,"nextIds")}</div>
+        <div><h3>Opcionális elágazások</h3>${links(s.optionalNextIds,"optionalNextIds")}</div>
+      </div>
+      <p class="muted">Ezek csak navigációs kapcsolatok. Nem indítanak el automatikusan eseményt vagy harcot.</p>
+    </details>
+    <hr>
+    <details open>
+      <summary>Tényleges játékállapot</summary>
+      <div class="grid two">
+        ${selectField("Jelenet állapota","playStatus",s.play.status,[
+          ["unplayed","Még nem játszott"],["current","Aktuális"],["done","Lezárva"],["skipped","Kihagyva"]
+        ])}
+        ${field("Tényleges kimenetel","playOutcome",s.play.outcome,{textarea:true})}
+        ${field("Rögtönzött változtatás","playChangedText",s.play.changedText,{textarea:true})}
+        ${field("Játék közbeni jegyzetek","playNotes",s.play.notes,{textarea:true})}
+      </div>
+      <div class="actions" style="margin-top:10px">
+        <button class="primary" id="saveSceneBtn">Mentés</button>
+        <button id="appendPlayNote">＋ Naplóbejegyzés hozzáadása</button>
+      </div>
+      <p class="muted" style="margin-top:8px">A rögtönzött változtatások a játékállapotba kerülnek. Az előkészített leírást nem írják át.</p>
+    </details>
+    <hr>
+    <div class="row between">
+      <small>Utolsó módosítás: a következő mentéskor frissül</small>
+      <button class="primary" id="saveSceneBottom">Változtatások mentése</button>
+    </div>
+  `;
+  $("sceneMakeCurrent").onclick=()=>setCurrentScene(s.id);
+  $("sceneDuplicate").onclick=()=>duplicateScene(s.id);
+  $("sceneDelete").onclick=()=>deleteScene(s.id);
+  $("saveSceneBtn").onclick=()=>saveSceneEditor(s.id);
+  $("saveSceneBottom").onclick=()=>saveSceneEditor(s.id);
+  $("appendPlayNote").onclick=()=>appendNoteToScene(s.id);
+}
+function readValue(id) {return $(id)?.value ?? "";}
+function saveSceneEditor(id) {
+  const a=currentAdventure(),s=a?.scenes.find(x=>x.id===id);
+  if(!s)return;
+  s.name=readValue("f_name").trim() || "Névtelen jelenet";
+  const orderValue=Number(readValue("f_order"));
+  s.order=Number.isFinite(orderValue)?orderValue:s.order;
+  s.location=readValue("f_location");
+  s.optional=$("optional").checked;
+  s.summary=readValue("f_summary");
+  s.playerText=readValue("f_playerText");
+  s.gmSecret=readValue("f_gmSecret");
+  s.trigger=readValue("f_trigger");
+  s.npcs=readValue("f_npcs");
+  s.hazards=readValue("f_hazards");
+  s.loot=readValue("f_loot");
+  s.reminders=readValue("f_reminders");
+  s.preparedNotes=readValue("f_preparedNotes");
+  s.nextIds=[...document.querySelectorAll('[data-link-field="nextIds"]:checked')].map(x=>x.value);
+  s.optionalNextIds=[...document.querySelectorAll('[data-link-field="optionalNextIds"]:checked')].map(x=>x.value).filter(x=>!s.nextIds.includes(x));
+  s.play.status=readValue("playStatus");
+  s.play.outcome=readValue("f_playOutcome");
+  s.play.changedText=readValue("f_playChangedText");
+  s.play.notes=readValue("f_playNotes");
+  if(s.play.status==="current") a.currentSceneId=s.id;
+  logEvent(a,"Jelenet mentve: "+s.name,s.id);
+  persist();
+  renderAll();
+  renderSceneEditor();
+  toast("Jelenet mentve.");
+}
+function setCurrentScene(id) {
+  const a=currentAdventure();if(!a)return;
+  a.currentSceneId=id;
+  a.scenes.forEach(s=>{if(s.play.status==="current")s.play.status="unplayed";});
+  const s=sceneById(a,id);
+  if(s)s.play.status="current";
+  selectedSceneId=id;
+  logEvent(a,"Aktuális jelenet: "+sceneLabel(a,id),id);
+  saveAndRender();
+  renderSceneEditor();
+  toast("Aktuális jelenet beállítva.");
+}
+function createScene() {
+  const a=currentAdventure();if(!a)return;
+  const s=makeScene("Új jelenet",a.scenes.length);
+  a.scenes.push(s);
+  selectedSceneId=s.id;
+  logEvent(a,"Új jelenet létrehozva: "+s.name,s.id);
+  saveAndRender();
+  setView("scenes");
+  renderSceneEditor();
+}
+function duplicateScene(id) {
+  const a=currentAdventure(),s=sceneById(a,id);if(!s)return;
+  const copy=JSON.parse(JSON.stringify(s));
+  copy.id=uid("scene");
+  copy.name=s.name+" – másolat";
+  copy.order=a.scenes.length;
+  copy.nextIds=[];
+  copy.optionalNextIds=[];
+  copy.play={status:"unplayed",notes:"",outcome:"",changedText:"",log:[]};
+  a.scenes.push(copy);
+  selectedSceneId=copy.id;
+  logEvent(a,"Jelenet másolva: "+copy.name,copy.id);
+  saveAndRender();
+  setView("scenes");
+  renderSceneEditor();
+}
+function deleteScene(id) {
+  const a=currentAdventure(),s=sceneById(a,id);if(!s)return;
+  if(!confirm(`Biztosan törlöd ezt a jelenetet?\n\n${s.name}`))return;
+  a.scenes=a.scenes.filter(x=>x.id!==id);
+  a.scenes.forEach(x=>{
+    x.nextIds=x.nextIds.filter(v=>v!==id);
+    x.optionalNextIds=x.optionalNextIds.filter(v=>v!==id);
+  });
+  if(a.currentSceneId===id)a.currentSceneId=a.scenes[0]?.id || null;
+  if(selectedSceneId===id)selectedSceneId=a.currentSceneId;
+  logEvent(a,"Jelenet törölve: "+s.name,id);
+  saveAndRender();
+  renderSceneEditor();
+  toast("Jelenet törölve.");
+}
+function appendNoteToScene(id) {
+  const a=currentAdventure(),s=sceneById(a,id);if(!s)return;
+  const note=prompt("Játék közbeni feljegyzés:");
+  if(note===null || !note.trim())return;
+  const entry={id:uid("log"),time:now(),message:note.trim(),sceneId:id};
+  s.play.log.unshift(entry);
+  s.play.notes=[s.play.notes,note.trim()].filter(Boolean).join("\n\n");
+  logEvent(a,"Feljegyzés: "+note.trim(),id);
+  saveAndRender();
+  renderSceneEditor();
+  toast("Feljegyzés elmentve.");
+}
+function addQuickNote() {
+  const a=currentAdventure();if(!a)return;
+  const note=prompt("Játék közbeni feljegyzés:");
+  if(note===null || !note.trim())return;
+  logEvent(a,note.trim(),a.currentSceneId);
+  const s=sceneById(a,a.currentSceneId);
+  if(s) {
+    s.play.log.unshift({id:uid("log"),time:now(),message:note.trim(),sceneId:s.id});
+  }
+  saveAndRender();
+  toast("Feljegyzés elmentve.");
+}
+
+$("addSceneBtn").onclick=createScene;
+$("quickAddScene").onclick=createScene;
+$("mapAddScene").onclick=createScene;
+$("quickAddNote").onclick=addQuickNote;
+$("quickMap").onclick=()=>setView("map");
+$("continueBtn").onclick=()=>{const a=currentAdventure();if(a?.currentSceneId)openScene(a.currentSceneId);};
+$("dashboardAllScenes").onclick=()=>setView("scenes");
+
+function renderLibrary() {
+  const a=currentAdventure();if(!a)return;
+  const type=$("libraryTypeFilter").value;
+  const list=a.library.filter(x=>type==="all"||x.type===type);
+  $("libraryList").innerHTML=list.length?list.map(x=>`
+    <button class="scene-item ${x.id===selectedLibraryId?"selected":""}" style="margin-bottom:6px" data-library="${escapeHTML(x.id)}">
+      <strong>${escapeHTML(x.name)}</strong>
+      <small>${escapeHTML(({npc:"Szereplő / NPC",location:"Helyszín",event:"Esemény",other:"Egyéb"})[x.type]||"Egyéb")}</small>
+    </button>`).join(""):'<div class="empty">Még nincs tartalmi elem.</div>';
+  $("libraryList").querySelectorAll("[data-library]").forEach(b=>b.onclick=()=>openLibraryItem(b.dataset.library));
+  if(!selectedLibraryId || !a.library.some(x=>x.id===selectedLibraryId)) {
+    $("libraryEditor").innerHTML='<div class="empty">Válassz egy elemet, vagy hozz létre újat.</div>';
+  }
+}
+$("libraryTypeFilter").onchange=renderLibrary;
+function openLibraryItem(id) {
+  selectedLibraryId=id;
+  const a=currentAdventure(),item=a?.library.find(x=>x.id===id);if(!item)return;
+  $("libraryEditor").innerHTML=`
+    <h3>Tartalmi elem szerkesztése</h3>
+    ${selectField("Típus","libType",item.type,[
+      ["npc","Szereplő / NPC"],["location","Helyszín"],["event","Esemény"],["other","Egyéb"]
+    ])}
+    <div style="margin-top:10px">${field("Név","libName",item.name)}</div>
+    <div style="margin-top:10px">${field("Leírás / részletek","libDescription",item.description,{textarea:true})}</div>
+    <div style="margin-top:10px">${field("Címkék","libTags",item.tags,{placeholder:"pl. menedék, rádió, veszély"})}</div>
+    <hr>
+    <div class="actions">
+      <button class="primary" id="saveLibraryItem">Mentés</button>
+      <button class="danger" id="deleteLibraryItem">Törlés</button>
+    </div>
+    <hr>
+    <h3>Jelenetek, amelyekben használható</h3>
+    <div class="muted">${escapeHTML(a.scenes.filter(s=>
+      (s.npcs+" "+s.location+" "+s.preparedNotes).toLocaleLowerCase("hu").includes(item.name.toLocaleLowerCase("hu"))
+    ).map(s=>s.name).join(", ") || "A tartalmi elem nevét még nem hivatkozza egy jelenet sem.")}</div>
+  `;
+  $("saveLibraryItem").onclick=()=>{
+    item.type=readValue("libType");
+    item.name=readValue("f_libName").trim()||"Névtelen elem";
+    item.description=readValue("f_libDescription");
+    item.tags=readValue("f_libTags");
+    logEvent(a,"Tartalmi elem módosítva: "+item.name);
+    saveAndRender();openLibraryItem(item.id);toast("Tartalmi elem mentve.");
+  };
+  $("deleteLibraryItem").onclick=()=>{
+    if(!confirm("Törlöd ezt a tartalmi elemet?"))return;
+    a.library=a.library.filter(x=>x.id!==item.id);
+    selectedLibraryId=null;saveAndRender();toast("Tartalmi elem törölve.");
+  };
+  renderLibrary();
+}
+$("addLibraryItem").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  const item={id:uid("lib"),type:"npc",name:"Új tartalmi elem",description:"",tags:""};
+  a.library.push(item);selectedLibraryId=item.id;
+  saveAndRender();openLibraryItem(item.id);
+};
+
+
+function drawMap() {
+  const a = currentAdventure();
+  const svg = $("sceneMap");
+  if (!svg || !a) return;
+
+  const scenes = a.scenes.slice().sort((x, y) => x.order - y.order);
+  const sceneById = new Map(scenes.map(s => [s.id, s]));
+
+  const nodeW = 178;
+  const nodeH = 64;
+  const gapX = 42;
+  const gapY = 74;
+  const pad = 36;
+  const colStep = nodeW + gapX;
+  const rowStep = nodeH + gapY;
+
+  if (!scenes.length) {
+    svg.setAttribute("viewBox", "0 0 720 300");
+    svg.setAttribute("width", "720");
+    svg.setAttribute("height", "300");
+    svg.style.width = "720px";
+    svg.style.maxWidth = "none";
+    svg.innerHTML =
+      '<text x="360" y="150" fill="#a69a85" text-anchor="middle">' +
+      'Még nincs jelenet. Hozz létre egyet.</text>';
+    $("mapLegend").textContent = "0 jelenet · 0 kapcsolat";
+    return;
+  }
+
+  const linksFor = s => [
+    ...(s.nextIds || []).map(id => ({ id, optional: false })),
+    ...(s.optionalNextIds || []).map(id => ({ id, optional: true }))
+  ].filter(link => sceneById.has(link.id));
+
+  // A fő kapcsolatok bejövő éleinek száma.
+  const incoming = new Map(scenes.map(s => [s.id, 0]));
+
+  scenes.forEach(s => {
+    (s.nextIds || []).forEach(id => {
+      if (incoming.has(id)) {
+        incoming.set(id, incoming.get(id) + 1);
+      }
+    });
+  });
+
+  // Lehetőleg olyan jelenetből indulunk, amelynek
+  // nincs fő kapcsolatból érkező előzménye.
+  const start =
+    scenes.find(s => incoming.get(s.id) === 0) || scenes[0];
+
+  // A fő útvonal felépítése.
+  // Körkörös kapcsolatok esetén nem járjuk be újra ugyanazt
+  // a jelenetet.
+  const mainPath = [];
+  const mainIds = new Set();
+  let cursor = start;
+
+  while (cursor && !mainIds.has(cursor.id)) {
+    mainPath.push(cursor);
+    mainIds.add(cursor.id);
+
+    const next = (cursor.nextIds || [])
+      .filter(id => sceneById.has(id) && !mainIds.has(id));
+
+    cursor = next.length ? sceneById.get(next[0]) : null;
+  }
+
+  const mainIndex = new Map(
+    mainPath.map((s, i) => [s.id, i])
+  );
+
+  // A pozíciók oszlopok és sorok alapján készülnek.
+  // A fő útvonal a 0. oszlopban fut.
+  const positions = {};
+  mainPath.forEach((s, i) => {
+    positions[s.id] = { col: 0, row: i };
+  });
+
+  // Az oldalágak elhelyezése. Minden külön ág saját
+  // oszlopot kap, így az azonos magasságú kártyák
+  // nem fedik egymást.
+  let leftLane = 1;
+  let rightLane = 1;
+  const assigned = new Set(mainIds);
+
+  function placeBranch(scene, anchorRow, side, depth, lane) {
+    if (!scene || assigned.has(scene.id)) return;
+
+    assigned.add(scene.id);
+    positions[scene.id] = {
+      col: side * lane,
+      row: anchorRow + depth
+    };
+
+    const children = linksFor(scene)
+      .filter(link => !assigned.has(link.id))
+      .sort((x, y) => {
+        if (x.optional !== y.optional) {
+          return x.optional ? -1 : 1;
+        }
+        return sceneById.get(x.id).order -
+          sceneById.get(y.id).order;
+      });
+
+    children.forEach(link => {
+      const child = sceneById.get(link.id);
+      if (!child || assigned.has(child.id)) return;
+
+      // Az opcionális elágazás balra, a többi folytatás
+      // a saját ágának oldalán halad tovább.
+      const childSide = link.optional ? -1 : side;
+      const childLane = childSide < 0 ? leftLane++ : rightLane++;
+
+      placeBranch(
+        child,
+        anchorRow,
+        childSide,
+        depth + 1,
+        childLane
+      );
+    });
+  }
+
+  // Először a fő útvonalból nyíló ágakat rendezzük el.
+  mainPath.forEach((scene, index) => {
+    const branches = linksFor(scene)
+      .filter(link => !mainIds.has(link.id))
+      .sort((x, y) => {
+        if (x.optional !== y.optional) {
+          return x.optional ? -1 : 1;
+        }
+        return sceneById.get(x.id).order -
+          sceneById.get(y.id).order;
+      });
+
+    branches.forEach(link => {
+      const child = sceneById.get(link.id);
+      if (!child || assigned.has(child.id)) return;
+
+      const side = link.optional ? -1 : 1;
+      const lane = side < 0 ? leftLane++ : rightLane++;
+
+      placeBranch(child, index, side, 1, lane);
+    });
+  });
+
+  // Az indulópontból el nem érhető jeleneteket külön,
+  // a térkép alsó részén jelenítjük meg.
+  const orphanScenes = scenes.filter(s => !assigned.has(s.id));
+  const maxMainRow = mainPath.length
+    ? mainPath.length - 1
+    : 0;
+  const maxExistingRow = Math.max(
+    maxMainRow,
+    ...Object.values(positions).map(p => p.row)
+  );
+
+  orphanScenes.forEach((s, i) => {
+    positions[s.id] = {
+      col: i - Math.floor((orphanScenes.length - 1) / 2),
+      row: maxExistingRow + 2 + Math.floor(i / 5)
+    };
+  });
+
+  // Az oszlopokat eltoljuk, hogy ne legyen negatív SVG-koordináta.
+  const allCols = Object.values(positions).map(p => p.col);
+  const minCol = Math.min(0, ...allCols);
+  const maxCol = Math.max(0, ...allCols);
+  const maxRow = Math.max(...Object.values(positions).map(p => p.row));
+
+  const width = Math.max(
+    720,
+    pad * 2 + (maxCol - minCol) * colStep + nodeW
+  );
+  const height = Math.max(
+    300,
+    pad * 2 + maxRow * rowStep + nodeH
+  );
+
+  Object.values(positions).forEach(p => {
+    p.x = pad + (p.col - minCol) * colStep;
+    p.y = pad + p.row * rowStep;
+  });
+
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+  svg.setAttribute("width", width);
+  svg.style.width = `max(${width}px, 100%)`;
+  svg.style.maxWidth = "none";
+
+  let out = "";
+
+  // Kapcsolatok rajzolása a kártyák mögé.
+  scenes.forEach(scene => {
+    linksFor(scene).forEach(link => {
+      const p = positions[scene.id];
+      const q = positions[link.id];
+      if (!p || !q) return;
+
+      let d;
+
+      if (q.y > p.y + nodeH) {
+        // Előre haladó kapcsolat: alulról felfelé.
+        const x1 = p.x + nodeW / 2;
+        const y1 = p.y + nodeH;
+        const x2 = q.x + nodeW / 2;
+        const y2 = q.y;
+        const bend = Math.max(22, (y2 - y1) * 0.42);
+
+        d = `M ${x1} ${y1} C ${x1} ${y1 + bend}, ` +
+            `${x2} ${y2 - bend}, ${x2} ${y2}`;
+      } else {
+        // Visszafelé vagy azonos szinten futó kapcsolat.
+        const toRight = q.x >= p.x;
+        const x1 = p.x + (toRight ? nodeW : 0);
+        const y1 = p.y + nodeH / 2;
+        const x2 = q.x + (toRight ? 0 : nodeW);
+        const y2 = q.y + nodeH / 2;
+        const bend = Math.max(28, Math.abs(x2 - x1) * 0.35);
+
+        d = `M ${x1} ${y1} C ${x1 + (toRight ? bend : -bend)} ${y1}, ` +
+            `${x2 - (toRight ? bend : -bend)} ${y2}, ${x2} ${y2}`;
+      }
+
+      out += `<path class="map-edge ${link.optional ? "optional" : ""}" ` +
+        `d="${d}"/>`;
+    });
+  });
+
+  // Jelenetkártyák.
+  scenes.forEach(s => {
+    const p = positions[s.id];
+    const cls = [
+      s.id === selectedSceneId ? "selected" : "",
+      s.id === a.currentSceneId ? "current" : ""
+    ].filter(Boolean).join(" ");
+
+    const name = s.name || "Névtelen jelenet";
+    const title = name.length > 23
+      ? name.slice(0, 22) + "…"
+      : name;
+
+    const location = s.location || "Helyszín nélkül";
+    const shortLocation = location.length > 23
+      ? location.slice(0, 22) + "…"
+      : location;
+
+    const status =
+      s.play.status === "done" ? "✓" :
+      s.play.status === "skipped" ? "↷" :
+      s.play.status === "current" ? "▶" : "";
+
+    out += `
+      <g class="map-node ${cls}"
+         data-map-scene="${escapeHTML(s.id)}"
+         tabindex="0"
+         role="button"
+         aria-label="${escapeHTML(name)}">
+        <rect x="${p.x}" y="${p.y}"
+              width="${nodeW}" height="${nodeH}" rx="8"/>
+        <text x="${p.x + 12}" y="${p.y + 25}">
+          ${escapeHTML(title)}
+        </text>
+        <text x="${p.x + 12}" y="${p.y + 45}"
+              style="fill:#b6a58c;font-size:10px">
+          ${escapeHTML(shortLocation)}
+        </text>
+        <text x="${p.x + nodeW - 17}" y="${p.y + 17}"
+              text-anchor="middle"
+              style="fill:#d9b36f;font-size:12px">
+          ${status}
+        </text>
+      </g>`;
+  });
+
+  svg.innerHTML = out;
+
+  svg.querySelectorAll("[data-map-scene]").forEach(g => {
+    const go = () => openScene(g.dataset.mapScene);
+
+    g.addEventListener("click", go);
+    g.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        go();
+      }
+    });
+  });
+
+  const connectionCount = scenes.reduce(
+    (n, s) => n +
+      (s.nextIds || []).filter(id => sceneById.has(id)).length +
+      (s.optionalNextIds || []).filter(id => sceneById.has(id)).length,
+    0
+  );
+
+  $("mapLegend").textContent =
+    `${scenes.length} jelenet · ${connectionCount} kapcsolat`;
+}
+
+
+function renderSearch() {
+  const a=currentAdventure(),query=$("searchInput").value.trim().toLocaleLowerCase("hu");
+  if(!a||query.length<2){$("searchResults").innerHTML='<div class="empty">Írj be legalább két karaktert.</div>';return;}
+  const results=[];
+  const fields=[
+    ["Jelenet neve",s=>s.name],
+    ["Helyszín",s=>s.location],
+    ["Összefoglaló",s=>s.summary],
+    ["Játékosleírás",s=>s.playerText],
+    ["Mesélői titok",s=>s.gmSecret],
+    ["Emlékeztető",s=>s.reminders],
+    ["Előkészített jegyzet",s=>s.preparedNotes],
+    ["Játék közbeni jegyzet",s=>s.play.notes],
+    ["Tényleges kimenetel",s=>s.play.outcome],
+    ["Rögtönzött változtatás",s=>s.play.changedText],
+    ["Szereplők",s=>s.npcs],
+    ["Veszélyek",s=>s.hazards],
+    ["Zsákmány",s=>s.loot]
+  ];
+  a.scenes.forEach(s=>fields.forEach(([label,get])=>{
+    const value=safeText(get(s));
+    if(value.toLocaleLowerCase("hu").includes(query))results.push({
+      sceneId:s.id,title:s.name,source:label,text:value
+    });
+  }));
+  a.library.forEach(item=>{
+    const text=[item.name,item.description,item.tags].join(" ");
+    if(text.toLocaleLowerCase("hu").includes(query))results.push({
+      libraryId:item.id,title:item.name,source:"Tartalomtár",text
+    });
+  });
+  a.log.forEach(l=>{
+    if(l.message.toLocaleLowerCase("hu").includes(query))results.push({
+      sceneId:l.sceneId,title:l.sceneId?sceneLabel(a,l.sceneId):"Kalandnapló",
+      source:"Játék közbeni napló",text:l.message
+    });
+  });
+  $("searchResults").innerHTML=results.length?`<p class="muted">${results.length} találat</p>`+
+    results.map(r=>`<div class="result">
+      <div class="row between"><strong>${escapeHTML(r.title)}</strong><span class="badge">${escapeHTML(r.source)}</span></div>
+      <p>${escapeHTML(r.text.slice(0,600))}${r.text.length>600?"…":""}</p>
+      ${r.sceneId?`<button class="small" data-result-scene="${escapeHTML(r.sceneId)}">Jelenet megnyitása</button>`:""}
+      ${r.libraryId?`<button class="small" data-result-library="${escapeHTML(r.libraryId)}">Tartalmi elem megnyitása</button>`:""}
+    </div>`).join(""):'<div class="empty">Nincs találat.</div>';
+  $("searchResults").querySelectorAll("[data-result-scene]").forEach(b=>b.onclick=()=>openScene(b.dataset.resultScene));
+  $("searchResults").querySelectorAll("[data-result-library]").forEach(b=>b.onclick=()=>{
+    setView("library");openLibraryItem(b.dataset.resultLibrary);
+  });
+}
+$("searchInput").addEventListener("input",renderSearch);
+
+function renderDataInfo() {
+  const a=currentAdventure();if(!a)return;
+  $("dataAdventureInfo").innerHTML=`
+    <p><strong>${escapeHTML(a.name)}</strong></p>
+    <p>${a.scenes.length} jelenet · ${a.library.length} tartalmi elem · ${a.log.length} naplóbejegyzés</p>
+    <p class="muted">Létrehozva: ${escapeHTML(new Date(a.createdAt).toLocaleString("hu-HU"))}</p>
+    <p class="muted">Módosítva: ${escapeHTML(new Date(a.updatedAt).toLocaleString("hu-HU"))}</p>`;
+}
+
+function downloadJSON(data,filename) {
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function filenameFor(name) {
+  return (name||"zombie-road").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-zA-Z0-9_-]+/g,"_").replace(/^_+|_+$/g,"").slice(0,70)||"zombie-road";
+}
+$("exportBtn").onclick=()=>{
+  downloadJSON({app:"Zombie Road Történetkezelő",version:APP_VERSION,exportedAt:now(),adventures:state.adventures,selectedAdventureId:state.selectedAdventureId},
+    "ZombieRoad_Tortenetek.json");
+  toast("A teljes JSON-mentés elkészült.");
+};
+$("exportCurrentBtn").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  downloadJSON({app:"Zombie Road Történetkezelő",version:APP_VERSION,exportedAt:now(),adventures:[a],selectedAdventureId:a.id},
+    filenameFor(a.name)+".json");
+};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try {
+    const parsed=JSON.parse(await file.text());
+    let incoming;
+    if(Array.isArray(parsed.adventures)) incoming=parsed.adventures;
+    else if(Array.isArray(parsed.scenes)) incoming=[parsed];
+    else throw new Error("A JSON nem tartalmaz felismerhető kalandlistát.");
+    if(!incoming.length)throw new Error("A fájlban nincs kaland.");
+    if(!confirm(`A fájl ${incoming.length} kalandot tartalmaz. Hozzáadjuk őket a meglévő kalandokhoz?`))return;
+    const existingIds=new Set(state.adventures.map(a=>a.id));
+    const normalized=incoming.map(raw=>{
+      const a=normalizeAdventure(raw);
+      if(existingIds.has(a.id))a.id=uid("adv");
+      existingIds.add(a.id);
+      return a;
+    });
+    state.adventures.push(...normalized);
+    state.selectedAdventureId=normalized[0].id;
+    selectedSceneId=normalized[0].currentSceneId;
+    saveAndRender();
+    toast("JSON betöltve.");
+  } catch(err) {
+    alert("A JSON betöltése nem sikerült:\n"+err.message);
+  } finally {
+    e.target.value="";
+  }
+});
+
+$("newAdventureBtn").onclick=()=>{
+  const name=prompt("Az új kaland neve:","Új Zombie Road kaland");
+  if(name===null)return;
+  const a=makeAdventure(name.trim()||"Új kaland");
+  state.adventures.push(a);state.selectedAdventureId=a.id;selectedSceneId=a.currentSceneId;
+  logEvent(a,"Kaland létrehozva.");
+  saveAndRender();setView("dashboard");toast("Új kaland létrehozva.");
+};
+$("duplicateAdventureBtn").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  const name=prompt("A másolat neve:",a.name+" – másolat");
+  if(name===null)return;
+  const copy=JSON.parse(JSON.stringify(a));
+  copy.id=uid("adv");copy.name=name.trim()||"Kalandmásolat";
+  copy.createdAt=now();copy.updatedAt=now();
+  const idMap=new Map(copy.scenes.map(s=>[s.id,uid("scene")]));
+  copy.scenes.forEach(s=>{
+    s.id=idMap.get(s.id);
+    s.nextIds=s.nextIds.map(id=>idMap.get(id)).filter(Boolean);
+    s.optionalNextIds=s.optionalNextIds.map(id=>idMap.get(id)).filter(Boolean);
+    s.play={status:"unplayed",notes:"",outcome:"",changedText:"",log:[]};
+  });
+  copy.currentSceneId=idMap.get(copy.currentSceneId)||copy.scenes[0]?.id||null;
+  copy.log=[];
+  copy.library.forEach(x=>x.id=uid("lib"));
+  state.adventures.push(copy);state.selectedAdventureId=copy.id;selectedSceneId=copy.currentSceneId;
+  logEvent(copy,"Kalandmásolat létrehozva.");
+  saveAndRender();setView("dashboard");toast("Kaland lemásolva.");
+};
+$("renameAdventureBtn").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  const name=prompt("Új név:",a.name);
+  if(name===null||!name.trim())return;
+  a.name=name.trim();logEvent(a,"Kaland átnevezve: "+a.name);
+  saveAndRender();toast("Kaland átnevezve.");
+};
+$("deleteAdventureBtn").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  if(state.adventures.length<=1){alert("Az utolsó kalandot nem törölheted. Hozz létre egy másikat előbb.");return;}
+  if(!confirm(`Biztosan törlöd a teljes kalandot és annak adatait?\n\n${a.name}`))return;
+  state.adventures=state.adventures.filter(x=>x.id!==a.id);
+  state.selectedAdventureId=state.adventures[0].id;
+  selectedSceneId=currentAdventure().currentSceneId;
+  saveAndRender();toast("Kaland törölve.");
+};
+$("resetPlayBtn").onclick=()=>{
+  const a=currentAdventure();if(!a)return;
+  if(!confirm("Törlöd a kaland játék közbeni állapotát? Az előkészített terv megmarad."))return;
+  a.scenes.forEach(s=>s.play={status:"unplayed",notes:"",outcome:"",changedText:"",log:[]});
+  a.currentSceneId=a.scenes[0]?.id||null;
+  a.log=[];
+  if(a.currentSceneId)sceneById(a,a.currentSceneId).play.status="current";
+  selectedSceneId=a.currentSceneId;
+  saveAndRender();renderSceneEditor();toast("Játékállapot visszaállítva.");
+};
+
+window.addEventListener("beforeunload",()=>persist());
+
+loadLocal();
+if(currentAdventure())selectedSceneId=currentAdventure().currentSceneId;
+renderAll();
+</script>
+</body>
+</html>
